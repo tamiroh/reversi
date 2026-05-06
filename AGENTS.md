@@ -1,0 +1,58 @@
+# Coding Agent Notes
+
+## Project Shape
+
+- This is a TypeScript Node.js CLI Reversi game.
+- Runtime target is modern Node.js 24.
+- The app is intentionally small. Prefer a few clear modules over premature splitting.
+- Current module boundaries:
+    - `src/game.ts`: Reversi rules, board representation, board rendering, square parsing/formatting.
+    - `src/ai.ts`: CPU square selection and scoring.
+    - `src/cli.ts`: terminal I/O and game loop wiring.
+
+## Commands
+
+- `npm run dev`: run the CLI directly from TypeScript with Node.
+- `npm run build`: compile TypeScript into `dist`.
+- `npm test`: run compiled tests from `dist`.
+- `npm run format`: apply Prettier.
+- `npm run format:check`: check Prettier formatting.
+- `npm run ci`: format check, build, and test.
+
+After editing files, run `npm run format` before verification. Treat it like an agent-side formatting hook.
+
+## Formatting
+
+- Follow `.editorconfig`: 4-space indentation.
+- Prettier is part of CI.
+- `package-lock.json` is intentionally excluded from Prettier via `.prettierignore`.
+
+## Naming
+
+- Use domain terms that describe the board action directly.
+- `Position` means a row/column coordinate.
+- `placeDisc` and `legalDiscPlacements` are the preferred terms for disc placement logic.
+- Use `square` for user-facing board input.
+
+## File Organization
+
+- In larger modules, use this style of section header:
+
+```ts
+//
+// Section Name
+//
+```
+
+Keep related functions in the matching section. Reorder within a file when it improves scanability.
+
+## Design Decisions
+
+- Keep board logic in `game.ts` for now. A previous attempt to split `board.ts` made the boundary feel unclear.
+- Keep terminal input simple and keyboard-driven with typed squares such as `d3` or `3 4`.
+- Keep AI independent in `src/ai.ts`; it should depend on public game APIs rather than owning rule logic.
+
+## Testing
+
+- Add focused tests when changing game rules or AI scoring.
+- After code changes, run `npm run ci` unless the user explicitly says they will handle verification.
