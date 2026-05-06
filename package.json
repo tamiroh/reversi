@@ -10,7 +10,8 @@
     "build": "tsc",
     "start": "node dist/cli.js",
     "dev": "node src/cli.ts",
-    "test": "npm run build && node --test dist/**/*.test.js"
+    "test": "node --test dist/**/*.test.js",
+    "ci": "npm run build && npm test"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
