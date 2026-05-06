@@ -1,14 +1,25 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { chooseAiMove } from "./ai.ts";
-import { applyMove, createInitialGame, formatMove, legalMoves, type GameState } from "./game.ts";
+import { chooseAiPlacement } from "./ai.ts";
+import {
+  placeDisc,
+  createInitialGame,
+  formatBoardPosition,
+  legalDiscPlacements,
+  type GameState
+} from "./game.ts";
 
-test("AI chooses a legal move", () => {
+test("AI chooses a legal square", () => {
   const game = createInitialGame();
-  const aiMove = chooseAiMove(game);
+  const aiPlacement = chooseAiPlacement(game);
 
-  assert.ok(aiMove);
-  assert.ok(legalMoves(game.board, game.current).some((move) => formatMove(move) === formatMove(aiMove.move)));
+  assert.ok(aiPlacement);
+  assert.ok(
+    legalDiscPlacements(game.board, game.current).some(
+      (position) =>
+        formatBoardPosition(position) === formatBoardPosition(aiPlacement.position)
+    )
+  );
 });
 
 test("AI prefers an available corner", () => {
@@ -26,17 +37,17 @@ test("AI prefers an available corner", () => {
     ]
   };
 
-  const aiMove = chooseAiMove(game);
+  const aiPlacement = chooseAiPlacement(game);
 
-  assert.ok(aiMove);
-  assert.equal(formatMove(aiMove.move), "a1");
+  assert.ok(aiPlacement);
+  assert.equal(formatBoardPosition(aiPlacement.position), "a1");
 });
 
-test("AI move can be applied to the game", () => {
+test("AI placement can be applied to the game", () => {
   const game = createInitialGame();
-  const aiMove = chooseAiMove(game);
-  assert.ok(aiMove);
+  const aiPlacement = chooseAiPlacement(game);
+  assert.ok(aiPlacement);
 
-  const result = applyMove(game, aiMove.move);
+  const result = placeDisc(game, aiPlacement.position);
   assert.equal(result.ok, true);
 });

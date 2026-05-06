@@ -1,26 +1,28 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  applyMove,
+  placeDisc,
   createInitialGame,
-  formatMove,
-  legalMoves,
-  parseMove
+  formatBoardPosition,
+  legalDiscPlacements,
+  parseBoardPosition
 } from "./game.ts";
 
-test("initial board has four legal moves for black", () => {
+test("initial board has four legal squares for black", () => {
   const game = createInitialGame();
-  const moves = legalMoves(game.board, game.current).map(formatMove).sort();
+  const legalPositions = legalDiscPlacements(game.board, game.current)
+    .map(formatBoardPosition)
+    .sort();
 
-  assert.deepEqual(moves, ["c4", "d3", "e6", "f5"]);
+  assert.deepEqual(legalPositions, ["c4", "d3", "e6", "f5"]);
 });
 
-test("applying a move flips enclosed pieces and changes turn", () => {
+test("placing a disc flips enclosed discs and changes turn", () => {
   const game = createInitialGame();
-  const move = parseMove("d3");
-  assert.ok(move);
+  const position = parseBoardPosition("d3");
+  assert.ok(position);
 
-  const result = applyMove(game, move);
+  const result = placeDisc(game, position);
   assert.equal(result.ok, true);
 
   if (result.ok) {
@@ -31,17 +33,17 @@ test("applying a move flips enclosed pieces and changes turn", () => {
   }
 });
 
-test("rejects illegal moves", () => {
+test("rejects illegal placements", () => {
   const game = createInitialGame();
-  const result = applyMove(game, { row: 0, col: 0 });
+  const result = placeDisc(game, { row: 0, col: 0 });
 
   assert.equal(result.ok, false);
 });
 
-test("parses algebraic and numeric move input", () => {
-  assert.deepEqual(parseMove("a1"), { row: 0, col: 0 });
-  assert.deepEqual(parseMove("H8"), { row: 7, col: 7 });
-  assert.deepEqual(parseMove("3 4"), { row: 2, col: 3 });
-  assert.deepEqual(parseMove("3,4"), { row: 2, col: 3 });
-  assert.equal(parseMove("z9"), null);
+test("parses algebraic and numeric board positions", () => {
+  assert.deepEqual(parseBoardPosition("a1"), { row: 0, col: 0 });
+  assert.deepEqual(parseBoardPosition("H8"), { row: 7, col: 7 });
+  assert.deepEqual(parseBoardPosition("3 4"), { row: 2, col: 3 });
+  assert.deepEqual(parseBoardPosition("3,4"), { row: 2, col: 3 });
+  assert.equal(parseBoardPosition("z9"), null);
 });

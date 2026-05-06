@@ -2,15 +2,15 @@
 import { clearScreenDown, cursorTo } from "node:readline";
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
-import { chooseAiMove } from "./ai.ts";
+import { chooseAiPlacement } from "./ai.ts";
 import {
-  applyMove,
-  countPieces,
+  placeDisc,
+  countDiscsByPlayer,
   createInitialGame,
-  formatMove,
+  formatBoardPosition,
   isGameOver,
-  legalMoves,
-  parseMove,
+  legalDiscPlacements,
+  parseBoardPosition,
   renderBoard,
   winner,
   type GameState,
@@ -25,18 +25,18 @@ function playerName(player: Player): string {
 }
 
 function status(game: GameState): string {
-  const counts = countPieces(game.board);
-  const moves = legalMoves(game.board, game.current);
+  const counts = countDiscsByPlayer(game.board);
+  const legalPositions = legalDiscPlacements(game.board, game.current);
 
   return [
     renderBoard(game.board, {
-      moves,
+      legalPositions,
       graphical: true
     }),
     "",
     `Turn: ${playerName(game.current)}`,
     `Score: ● ${counts.B} - ○ ${counts.W}`,
-    `Legal moves: ${moves.map(formatMove).join(", ") || "none"}`
+    `Legal squares: ${legalPositions.map(formatBoardPosition).join(", ") || "none"}`
   ].join("\n");
 }
 
@@ -44,7 +44,7 @@ function screen(game: GameState, message?: string): string {
   return [
     "Reversi CLI",
     `You are ${playerName(HUMAN_PLAYER)}. CPU is ${playerName(AI_PLAYER)}.`,
-    "Enter moves like d3 or 3 4. Legal moves are +. Enter q to quit.",
+    "Enter a square like d3 or 3 4. Legal squares are +. Enter q to quit.",
     "",
     status(game),
     "",
@@ -71,24 +71,24 @@ async function main(): Promise<void> {
       if (game.current === AI_PLAYER) {
         render(game, message ?? "CPU is thinking...");
 
-        const aiMove = chooseAiMove(game);
-        if (!aiMove) {
-          throw new Error("CPU has no legal moves on its turn.");
+        const aiPlacement = chooseAiPlacement(game);
+        if (!aiPlacement) {
+          throw new Error("CPU has no legal squares on its turn.");
         }
 
-        const result = applyMove(game, aiMove.move);
+        const result = placeDisc(game, aiPlacement.position);
         if (!result.ok) {
-          throw new Error(`AI selected an illegal move: ${formatMove(aiMove.move)}`);
+          throw new Error(`AI selected an illegal square: ${formatBoardPosition(aiPlacement.position)}`);
         }
 
-        message = `CPU played ${formatMove(aiMove.move)} and flipped ${result.flipped.length}.`;
+        message = `CPU placed at ${formatBoardPosition(aiPlacement.position)} and flipped ${result.flipped.length}.`;
         game = result.game;
         continue;
       }
 
       render(game, message);
 
-      const answer = await rl.question("Move> ");
+      const answer = await rl.question("Square> ");
       const trimmed = answer.trim().toLowerCase();
 
       if (trimmed === "q" || trimmed === "quit" || trimmed === "exit") {
@@ -100,13 +100,13 @@ async function main(): Promise<void> {
         return;
       }
 
-      const move = parseMove(answer);
-      if (!move) {
+      const position = parseBoardPosition(answer);
+      if (!position) {
         message = "Use a square like d3, or row and column like 3 4.";
         continue;
       }
 
-      const result = applyMove(game, move);
+      const result = placeDisc(game, position);
       if (!result.ok) {
         message = result.reason;
         continue;
@@ -114,9 +114,9 @@ async function main(): Promise<void> {
 
       if (result.game.current === game.current) {
         const skipped = game.current === "B" ? "White" : "Black";
-        message = `${skipped} has no legal moves. ${playerName(game.current)} moves again.`;
+        message = `${skipped} has no legal squares. ${playerName(game.current)} places again.`;
       } else {
-        message = `${playerName(game.current)} played ${formatMove(move)} and flipped ${result.flipped.length}.`;
+        message = `${playerName(game.current)} placed at ${formatBoardPosition(position)} and flipped ${result.flipped.length}.`;
       }
 
       game = result.game;
@@ -131,7 +131,7 @@ async function main(): Promise<void> {
   }
 
   console.log(renderBoard(game.board, { graphical: true }));
-  const counts = countPieces(game.board);
+  const counts = countDiscsByPlayer(game.board);
   const result = winner(game.board);
   console.log(`Final score: ● ${counts.B} - ○ ${counts.W}`);
   console.log(result === "draw" ? "Draw." : `${playerName(result)} wins.`);

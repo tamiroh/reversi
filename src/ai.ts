@@ -1,14 +1,14 @@
 import {
-  applyMove,
-  countPieces,
-  legalMoves,
+  placeDisc,
+  countDiscsByPlayer,
+  legalDiscPlacements,
   opponent,
   type GameState,
   type Position
 } from "./game.ts";
 
-export type AiMove = {
-  move: Position;
+export type AiPlacement = {
+  position: Position;
   score: number;
 };
 
@@ -27,34 +27,34 @@ function comparePositions(a: Position, b: Position): number {
   return a.row - b.row || a.col - b.col;
 }
 
-export function scoreMove(game: GameState, move: Position): number {
-  const result = applyMove(game, move);
+export function scoreDiscPlacement(game: GameState, position: Position): number {
+  const result = placeDisc(game, position);
   if (!result.ok) {
     return Number.NEGATIVE_INFINITY;
   }
 
   const player = game.current;
   const other = opponent(player);
-  const counts = countPieces(result.game.board);
+  const counts = countDiscsByPlayer(result.game.board);
   const pieceDifference = counts[player] - counts[other];
   const mobilityDifference =
-    legalMoves(result.game.board, player).length - legalMoves(result.game.board, other).length;
+    legalDiscPlacements(result.game.board, player).length - legalDiscPlacements(result.game.board, other).length;
 
   return (
-    POSITION_WEIGHTS[move.row][move.col] +
+    POSITION_WEIGHTS[position.row][position.col] +
     result.flipped.length * 8 +
     pieceDifference * 2 +
     mobilityDifference * 4
   );
 }
 
-export function chooseAiMove(game: GameState): AiMove | null {
-  const moves = legalMoves(game.board, game.current);
-  if (moves.length === 0) {
+export function chooseAiPlacement(game: GameState): AiPlacement | null {
+  const positions = legalDiscPlacements(game.board, game.current);
+  if (positions.length === 0) {
     return null;
   }
 
-  return moves
-    .map((move) => ({ move, score: scoreMove(game, move) }))
-    .sort((a, b) => b.score - a.score || comparePositions(a.move, b.move))[0];
+  return positions
+    .map((position) => ({ position, score: scoreDiscPlacement(game, position) }))
+    .sort((a, b) => b.score - a.score || comparePositions(a.position, b.position))[0];
 }

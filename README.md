@@ -15,10 +15,10 @@ npm run build
 npm start
 ```
 
-Enter moves using board coordinates like `d3`, or row and column numbers like `3 4`.
-Legal moves are shown as `+`.
+Enter a square using board coordinates like `d3`, or row and column numbers like `3 4`.
+Legal squares are shown as `+`.
 
-You play black (`●`) and move first. The CPU plays white (`○`).
+You play black (`●`) and go first. The CPU plays white (`○`).
 
 ## Test
 

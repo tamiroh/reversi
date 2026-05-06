@@ -1,3 +1,7 @@
+//
+// Types
+//
+
 export type Player = "B" | "W";
 export type Cell = Player | ".";
 
@@ -6,7 +10,7 @@ export type Position = {
   col: number;
 };
 
-export type MoveResult =
+export type DiscPlacementResult =
   | { ok: true; game: GameState; flipped: Position[] }
   | { ok: false; reason: string };
 
@@ -16,9 +20,13 @@ export type GameState = {
 };
 
 export type RenderBoardOptions = {
-  moves?: Position[];
+  legalPositions?: Position[];
   graphical?: boolean;
 };
+
+//
+// Constants
+//
 
 const BOARD_SIZE = 8;
 const EMPTY: Cell = ".";
@@ -33,6 +41,10 @@ const DIRECTIONS: Position[] = [
   { row: 1, col: 1 }
 ];
 
+//
+// Game Setup
+//
+
 export function createInitialGame(): GameState {
   const board = Array.from({ length: BOARD_SIZE }, () =>
     Array.from<Cell>({ length: BOARD_SIZE }).fill(EMPTY)
@@ -45,6 +57,10 @@ export function createInitialGame(): GameState {
 
   return { board, current: "B" };
 }
+
+//
+// Board Helpers
+//
 
 export function boardSize(): number {
   return BOARD_SIZE;
@@ -62,12 +78,30 @@ export function isInside(row: number, col: number): boolean {
   return row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE;
 }
 
-export function flipsForMove(
+export function countDiscsByPlayer(board: Cell[][]): Record<Player, number> {
+  const counts: Record<Player, number> = { B: 0, W: 0 };
+
+  for (const row of board) {
+    for (const cell of row) {
+      if (cell === "B" || cell === "W") {
+        counts[cell] += 1;
+      }
+    }
+  }
+
+  return counts;
+}
+
+//
+// Placement Rules
+//
+
+export function positionsFlippedByDiscPlacement(
   board: Cell[][],
   player: Player,
-  move: Position
+  position: Position
 ): Position[] {
-  if (!isInside(move.row, move.col) || board[move.row][move.col] !== EMPTY) {
+  if (!isInside(position.row, position.col) || board[position.row][position.col] !== EMPTY) {
     return [];
   }
 
@@ -76,8 +110,8 @@ export function flipsForMove(
 
   for (const direction of DIRECTIONS) {
     const line: Position[] = [];
-    let row = move.row + direction.row;
-    let col = move.col + direction.col;
+    let row = position.row + direction.row;
+    let col = position.col + direction.col;
 
     while (isInside(row, col) && board[row][col] === other) {
       line.push({ row, col });
@@ -93,36 +127,40 @@ export function flipsForMove(
   return allFlips;
 }
 
-export function legalMoves(board: Cell[][], player: Player): Position[] {
-  const moves: Position[] = [];
+export function legalDiscPlacements(board: Cell[][], player: Player): Position[] {
+  const positions: Position[] = [];
 
   for (let row = 0; row < BOARD_SIZE; row += 1) {
     for (let col = 0; col < BOARD_SIZE; col += 1) {
-      if (flipsForMove(board, player, { row, col }).length > 0) {
-        moves.push({ row, col });
+      if (positionsFlippedByDiscPlacement(board, player, { row, col }).length > 0) {
+        positions.push({ row, col });
       }
     }
   }
 
-  return moves;
+  return positions;
 }
 
-export function applyMove(game: GameState, move: Position): MoveResult {
-  const flips = flipsForMove(game.board, game.current, move);
+//
+// Game Flow
+//
+
+export function placeDisc(game: GameState, position: Position): DiscPlacementResult {
+  const flips = positionsFlippedByDiscPlacement(game.board, game.current, position);
 
   if (flips.length === 0) {
-    return { ok: false, reason: "Illegal move." };
+    return { ok: false, reason: "Illegal placement." };
   }
 
   const board = cloneBoard(game.board);
-  board[move.row][move.col] = game.current;
+  board[position.row][position.col] = game.current;
 
   for (const flip of flips) {
     board[flip.row][flip.col] = game.current;
   }
 
   let next = opponent(game.current);
-  if (legalMoves(board, next).length === 0 && legalMoves(board, game.current).length > 0) {
+  if (legalDiscPlacements(board, next).length === 0 && legalDiscPlacements(board, game.current).length > 0) {
     next = game.current;
   }
 
@@ -133,32 +171,26 @@ export function applyMove(game: GameState, move: Position): MoveResult {
   };
 }
 
-export function countPieces(board: Cell[][]): Record<Player, number> {
-  const counts: Record<Player, number> = { B: 0, W: 0 };
-
-  for (const row of board) {
-    for (const cell of row) {
-      if (cell === "B" || cell === "W") {
-        counts[cell] += 1;
-      }
-    }
-  }
-
-  return counts;
-}
+//
+// Game Result
+//
 
 export function isGameOver(board: Cell[][]): boolean {
-  return legalMoves(board, "B").length === 0 && legalMoves(board, "W").length === 0;
+  return legalDiscPlacements(board, "B").length === 0 && legalDiscPlacements(board, "W").length === 0;
 }
 
 export function winner(board: Cell[][]): Player | "draw" {
-  const counts = countPieces(board);
+  const counts = countDiscsByPlayer(board);
   if (counts.B > counts.W) return "B";
   if (counts.W > counts.B) return "W";
   return "draw";
 }
 
-export function parseMove(input: string): Position | null {
+//
+// Position Coordinates
+//
+
+export function parseBoardPosition(input: string): Position | null {
   const text = input.trim().toLowerCase();
   const algebraic = /^([a-h])([1-8])$/.exec(text);
   if (algebraic) {
@@ -179,44 +211,50 @@ export function parseMove(input: string): Position | null {
   return null;
 }
 
-export function formatMove(move: Position): string {
-  return `${String.fromCharCode("a".charCodeAt(0) + move.col)}${move.row + 1}`;
+export function formatBoardPosition(position: Position): string {
+  return `${String.fromCharCode("a".charCodeAt(0) + position.col)}${position.row + 1}`;
 }
 
-function renderCell(cell: Cell, isLegalMove: boolean, graphical: boolean): string {
+//
+// Rendering
+//
+
+function renderCell(cell: Cell, isLegalPosition: boolean, graphical: boolean): string {
   if (!graphical) {
     if (cell !== EMPTY) return cell;
-    return isLegalMove ? "*" : ".";
+    return isLegalPosition ? "*" : ".";
   }
 
   if (cell === "B") return "●";
   if (cell === "W") return "○";
-  return isLegalMove ? "+" : "·";
+  return isLegalPosition ? "+" : "·";
 }
 
-function renderLargeCell(cell: Cell, isLegalMove: boolean): string {
+function renderLargeCell(cell: Cell, isLegalPosition: boolean): string {
   if (cell === "B") return " ● ";
   if (cell === "W") return " ○ ";
-  return isLegalMove ? " + " : "   ";
+  return isLegalPosition ? " + " : "   ";
 }
 
 export function renderBoard(
   board: Cell[][],
-  movesOrOptions: Position[] | RenderBoardOptions = []
+  positionsOrOptions: Position[] | RenderBoardOptions = []
 ): string {
-  const options = Array.isArray(movesOrOptions)
-    ? { moves: movesOrOptions, graphical: false }
-    : movesOrOptions;
-  const moves = options.moves ?? [];
+  const options = Array.isArray(positionsOrOptions)
+    ? { legalPositions: positionsOrOptions, graphical: false }
+    : positionsOrOptions;
+  const legalPositions = options.legalPositions ?? [];
   const graphical = options.graphical ?? false;
-  const moveKeys = new Set(moves.map((move) => `${move.row},${move.col}`));
+  const legalPositionKeys = new Set(
+    legalPositions.map((position) => `${position.row},${position.col}`)
+  );
 
   if (!graphical) {
     const lines = ["  a b c d e f g h"];
 
     for (let row = 0; row < BOARD_SIZE; row += 1) {
       const cells = board[row].map((cell, col) =>
-        renderCell(cell, moveKeys.has(`${row},${col}`), false)
+        renderCell(cell, legalPositionKeys.has(`${row},${col}`), false)
       );
       lines.push(`${row + 1} ${cells.join(" ")}`);
     }
@@ -231,7 +269,7 @@ export function renderBoard(
 
   for (let row = 0; row < BOARD_SIZE; row += 1) {
     const cells = board[row].map((cell, col) =>
-      renderLargeCell(cell, moveKeys.has(`${row},${col}`))
+      renderLargeCell(cell, legalPositionKeys.has(`${row},${col}`))
     );
     lines.push(`${row + 1} │${cells.join("│")}│`);
 
