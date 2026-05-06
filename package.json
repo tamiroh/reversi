@@ -1,0 +1,19 @@
+{
+  "name": "reversi-cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "reversi": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli.js",
+    "dev": "node src/cli.ts",
+    "test": "npm run build && node --test dist/**/*.test.js"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.8.0"
+  }
+}
