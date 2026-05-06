@@ -7,7 +7,7 @@ import {
     type Position,
 } from "./game.ts";
 
-export type AiPlacement = {
+export type CpuPlacement = {
     position: Position;
     score: number;
 };
@@ -52,7 +52,7 @@ export function scoreDiscPlacement(
     );
 }
 
-export function chooseAiPlacement(game: GameState): AiPlacement | null {
+export function chooseCpuPlacement(game: GameState): CpuPlacement | null {
     const positions = legalDiscPlacements(game.board, game.current);
     if (positions.length === 0) {
         return null;

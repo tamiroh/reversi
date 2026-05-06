@@ -2,7 +2,7 @@
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 import { setTimeout as delay } from "node:timers/promises";
-import { chooseAiPlacement } from "./ai.ts";
+import { chooseCpuPlacement } from "./cpu.ts";
 import {
     placeDisc,
     countDiscsByPlayer,
@@ -21,8 +21,8 @@ import {
     squarePrompt,
 } from "./ui.ts";
 
-const AI_PLAYER: Player = "W";
-const AI_THINKING_DELAY_MS = 700;
+const CPU_PLAYER: Player = "W";
+const CPU_THINKING_DELAY_MS = 700;
 const PLACEMENT_HIGHLIGHT_DELAY_MS = 700;
 
 async function main(): Promise<void> {
@@ -32,26 +32,26 @@ async function main(): Promise<void> {
 
     try {
         while (!isGameOver(game.board)) {
-            if (game.current === AI_PLAYER) {
+            if (game.current === CPU_PLAYER) {
                 renderGame(game, message ?? "CPU is thinking...");
-                await delay(AI_THINKING_DELAY_MS);
+                await delay(CPU_THINKING_DELAY_MS);
 
-                const aiPlacement = chooseAiPlacement(game);
-                if (!aiPlacement) {
+                const cpuPlacement = chooseCpuPlacement(game);
+                if (!cpuPlacement) {
                     throw new Error("CPU has no legal squares on its turn.");
                 }
 
-                const result = placeDisc(game, aiPlacement.position);
+                const result = placeDisc(game, cpuPlacement.position);
                 if (!result.ok) {
                     throw new Error(
-                        `AI selected an illegal square: ${formatBoardPosition(aiPlacement.position)}`,
+                        `CPU selected an illegal square: ${formatBoardPosition(cpuPlacement.position)}`,
                     );
                 }
 
-                message = `CPU placed at ${formatBoardPosition(aiPlacement.position)} and flipped ${result.flipped.length}.`;
+                message = `CPU placed at ${formatBoardPosition(cpuPlacement.position)} and flipped ${result.flipped.length}.`;
                 game = result.game;
                 renderGame(game, message, [
-                    aiPlacement.position,
+                    cpuPlacement.position,
                     ...result.flipped,
                 ]);
                 await delay(PLACEMENT_HIGHLIGHT_DELAY_MS);

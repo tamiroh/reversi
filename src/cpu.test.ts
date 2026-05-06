@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { chooseAiPlacement } from "./ai.ts";
+import { chooseCpuPlacement } from "./cpu.ts";
 import {
     placeDisc,
     createInitialGame,
@@ -9,19 +9,19 @@ import {
     type GameState,
 } from "./game.ts";
 
-test("AI chooses a legal square", () => {
+test("CPU chooses a legal square", () => {
     const game = createInitialGame();
-    const aiPlacement = chooseAiPlacement(game);
+    const cpuPlacement = chooseCpuPlacement(game);
 
-    assert.ok(aiPlacement);
+    assert.ok(cpuPlacement);
     assert.ok(
         legalDiscPlacements(game.board, game.current).some((position) =>
-            positionsEqual(position, aiPlacement.position),
+            positionsEqual(position, cpuPlacement.position),
         ),
     );
 });
 
-test("AI prefers an available corner", () => {
+test("CPU prefers an available corner", () => {
     const game: GameState = {
         current: "B",
         board: [
@@ -36,17 +36,17 @@ test("AI prefers an available corner", () => {
         ],
     };
 
-    const aiPlacement = chooseAiPlacement(game);
+    const cpuPlacement = chooseCpuPlacement(game);
 
-    assert.ok(aiPlacement);
-    assert.deepEqual(aiPlacement.position, { row: 0, col: 0 });
+    assert.ok(cpuPlacement);
+    assert.deepEqual(cpuPlacement.position, { row: 0, col: 0 });
 });
 
-test("AI placement can be applied to the game", () => {
+test("CPU placement can be applied to the game", () => {
     const game = createInitialGame();
-    const aiPlacement = chooseAiPlacement(game);
-    assert.ok(aiPlacement);
+    const cpuPlacement = chooseCpuPlacement(game);
+    assert.ok(cpuPlacement);
 
-    const result = placeDisc(game, aiPlacement.position);
+    const result = placeDisc(game, cpuPlacement.position);
     assert.equal(result.ok, true);
 });

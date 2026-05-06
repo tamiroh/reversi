@@ -7,7 +7,7 @@
 - The app is intentionally small. Prefer a few clear modules over premature splitting.
 - Current module boundaries:
     - `src/game.ts`: Reversi rules and board representation.
-    - `src/ai.ts`: CPU square selection and scoring.
+    - `src/cpu.ts`: CPU square selection and scoring.
     - `src/ui.ts`: UI-specific rendering, formatting, and input parsing. Keep terminal-specific code under a `Terminal UI` section.
     - `src/cli.ts`: executable game loop orchestration and terminal I/O wiring.
 
@@ -51,9 +51,9 @@ Keep related functions in the matching section. Reorder within a file when it im
 
 - Keep board logic in `game.ts` for now. A previous attempt to split `board.ts` made the boundary feel unclear.
 - Keep terminal input simple and keyboard-driven with typed squares such as `d3` or `3 4`.
-- Keep AI independent in `src/ai.ts`; it should depend on public game APIs rather than owning rule logic.
+- Keep CPU player logic independent in `src/cpu.ts`; it should depend on public game APIs rather than owning rule logic.
 
 ## Testing
 
-- Add focused tests when changing game rules or AI scoring.
+- Add focused tests when changing game rules or CPU scoring.
 - After code changes, run `npm run ci` unless the user explicitly says they will handle verification.

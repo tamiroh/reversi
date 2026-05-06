@@ -15,7 +15,7 @@ import {
 //
 
 const HUMAN_PLAYER: Player = "B";
-const AI_PLAYER: Player = "W";
+const CPU_PLAYER: Player = "W";
 const EMPTY: Cell = ".";
 
 type RenderBoardOptions = {
@@ -37,7 +37,9 @@ function playerName(player: Player): string {
 }
 
 function actorName(player: Player): string {
-    return player === HUMAN_PLAYER ? "You (●)" : "CPU (○)";
+    if (player === HUMAN_PLAYER) return "You (●)";
+    if (player === CPU_PLAYER) return "CPU (○)";
+    return playerName(player);
 }
 
 function renderCell(
