@@ -4,12 +4,12 @@
     "private": true,
     "type": "module",
     "bin": {
-        "reversi": "./dist/cli.js"
+        "reversi": "./dist/bin/reversi.js"
     },
     "scripts": {
         "build": "tsc",
-        "start": "node dist/cli.js",
-        "dev": "node src/cli.ts",
+        "start": "node dist/bin/reversi.js",
+        "dev": "node bin/reversi.ts",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "test": "node --test dist/**/*.test.js",

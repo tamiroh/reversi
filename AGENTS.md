@@ -6,10 +6,11 @@
 - Runtime target is modern Node.js 24.
 - The app is intentionally small. Prefer a few clear modules over premature splitting.
 - Current module boundaries:
-    - `src/game.ts`: Reversi rules and board representation.
-    - `src/cpu.ts`: CPU square selection and scoring.
-    - `src/ui.ts`: UI-specific rendering, formatting, and input parsing. Keep terminal-specific code under a `Terminal UI` section.
-    - `src/cli.ts`: executable game loop orchestration and terminal I/O wiring.
+    - `bin/reversi.ts`: thin executable entrypoint.
+    - `lib/app.ts`: CLI application orchestration and terminal I/O wiring.
+    - `lib/game.ts`: Reversi rules and board representation.
+    - `lib/cpu.ts`: CPU square selection and scoring.
+    - `lib/ui.ts`: UI-specific rendering, formatting, and input parsing. Keep terminal-specific code under a `Terminal UI` section.
 
 ## Commands
 
@@ -51,7 +52,7 @@ Keep related functions in the matching section. Reorder within a file when it im
 
 - Keep board logic in `game.ts` for now. A previous attempt to split `board.ts` made the boundary feel unclear.
 - Keep terminal input simple and keyboard-driven with typed squares such as `d3` or `3 4`.
-- Keep CPU player logic independent in `src/cpu.ts`; it should depend on public game APIs rather than owning rule logic.
+- Keep CPU player logic independent in `lib/cpu.ts`; it should depend on public game APIs rather than owning rule logic.
 
 ## Testing
 

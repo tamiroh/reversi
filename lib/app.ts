@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 import { setTimeout as delay } from "node:timers/promises";
@@ -25,7 +24,7 @@ const CPU_PLAYER: Player = "W";
 const CPU_THINKING_DELAY_MS = 700;
 const PLACEMENT_HIGHLIGHT_DELAY_MS = 700;
 
-async function main(): Promise<void> {
+export async function runCliApp(): Promise<void> {
     const rl = createInterface({ input, output });
     let game = createInitialGame();
     let message: string | undefined;
@@ -104,8 +103,3 @@ async function main(): Promise<void> {
     console.log(`Final score: ● ${counts.B} - ○ ${counts.W}`);
     console.log(result === "draw" ? "Draw." : `${playerLabel(result)} wins.`);
 }
-
-main().catch((error: unknown) => {
-    console.error(error instanceof Error ? error.message : String(error));
-    process.exitCode = 1;
-});
