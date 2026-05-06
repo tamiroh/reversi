@@ -19,11 +19,6 @@ export type GameState = {
     current: Player;
 };
 
-export type RenderBoardOptions = {
-    legalPositions?: Position[];
-    graphical?: boolean;
-};
-
 //
 // Constants
 //
@@ -59,15 +54,31 @@ export function createInitialGame(): GameState {
 }
 
 //
+// Player Helpers
+//
+
+export function opponent(player: Player): Player {
+    return player === "B" ? "W" : "B";
+}
+
+//
+// Position Helpers
+//
+
+export function positionsEqual(left: Position, right: Position): boolean {
+    return left.row === right.row && left.col === right.col;
+}
+
+export function positionKey(position: Position): string {
+    return `${position.row},${position.col}`;
+}
+
+//
 // Board Helpers
 //
 
 export function boardSize(): number {
     return BOARD_SIZE;
-}
-
-export function opponent(player: Player): Player {
-    return player === "B" ? "W" : "B";
 }
 
 export function cloneBoard(board: Cell[][]): Cell[][] {
@@ -210,104 +221,4 @@ export function winner(board: Cell[][]): Player | "draw" {
     if (counts.B > counts.W) return "B";
     if (counts.W > counts.B) return "W";
     return "draw";
-}
-
-//
-// Position Coordinates
-//
-
-export function parseBoardPosition(input: string): Position | null {
-    const text = input.trim().toLowerCase();
-    const algebraic = /^([a-h])([1-8])$/.exec(text);
-    if (algebraic) {
-        return {
-            col: algebraic[1].charCodeAt(0) - "a".charCodeAt(0),
-            row: Number(algebraic[2]) - 1,
-        };
-    }
-
-    const numeric = /^([1-8])\s*,?\s*([1-8])$/.exec(text);
-    if (numeric) {
-        return {
-            row: Number(numeric[1]) - 1,
-            col: Number(numeric[2]) - 1,
-        };
-    }
-
-    return null;
-}
-
-export function formatBoardPosition(position: Position): string {
-    return `${String.fromCharCode("a".charCodeAt(0) + position.col)}${position.row + 1}`;
-}
-
-//
-// Rendering
-//
-
-function renderCell(
-    cell: Cell,
-    isLegalPosition: boolean,
-    graphical: boolean,
-): string {
-    if (!graphical) {
-        if (cell !== EMPTY) return cell;
-        return isLegalPosition ? "*" : ".";
-    }
-
-    if (cell === "B") return "●";
-    if (cell === "W") return "○";
-    return isLegalPosition ? "+" : "·";
-}
-
-function renderLargeCell(cell: Cell, isLegalPosition: boolean): string {
-    if (cell === "B") return " ● ";
-    if (cell === "W") return " ○ ";
-    return isLegalPosition ? " + " : "   ";
-}
-
-export function renderBoard(
-    board: Cell[][],
-    positionsOrOptions: Position[] | RenderBoardOptions = [],
-): string {
-    const options = Array.isArray(positionsOrOptions)
-        ? { legalPositions: positionsOrOptions, graphical: false }
-        : positionsOrOptions;
-    const legalPositions = options.legalPositions ?? [];
-    const graphical = options.graphical ?? false;
-    const legalPositionKeys = new Set(
-        legalPositions.map((position) => `${position.row},${position.col}`),
-    );
-
-    if (!graphical) {
-        const lines = ["  a b c d e f g h"];
-
-        for (let row = 0; row < BOARD_SIZE; row += 1) {
-            const cells = board[row].map((cell, col) =>
-                renderCell(cell, legalPositionKeys.has(`${row},${col}`), false),
-            );
-            lines.push(`${row + 1} ${cells.join(" ")}`);
-        }
-
-        return lines.join("\n");
-    }
-
-    const lines = [
-        "     a   b   c   d   e   f   g   h",
-        "  ┌───┬───┬───┬───┬───┬───┬───┬───┐",
-    ];
-
-    for (let row = 0; row < BOARD_SIZE; row += 1) {
-        const cells = board[row].map((cell, col) =>
-            renderLargeCell(cell, legalPositionKeys.has(`${row},${col}`)),
-        );
-        lines.push(`${row + 1} │${cells.join("│")}│`);
-
-        if (row < BOARD_SIZE - 1) {
-            lines.push("  ├───┼───┼───┼───┼───┼───┼───┼───┤");
-        }
-    }
-
-    lines.push("  └───┴───┴───┴───┴───┴───┴───┴───┘");
-    return lines.join("\n");
 }

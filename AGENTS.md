@@ -6,9 +6,10 @@
 - Runtime target is modern Node.js 24.
 - The app is intentionally small. Prefer a few clear modules over premature splitting.
 - Current module boundaries:
-    - `src/game.ts`: Reversi rules, board representation, board rendering, square parsing/formatting.
+    - `src/game.ts`: Reversi rules and board representation.
     - `src/ai.ts`: CPU square selection and scoring.
-    - `src/cli.ts`: terminal I/O and game loop wiring.
+    - `src/ui.ts`: UI-specific rendering, formatting, and input parsing. Keep terminal-specific code under a `Terminal UI` section.
+    - `src/cli.ts`: executable game loop orchestration and terminal I/O wiring.
 
 ## Commands
 

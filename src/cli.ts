@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import { clearScreenDown, cursorTo } from "node:readline";
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 import { chooseAiPlacement } from "./ai.ts";
@@ -7,67 +6,21 @@ import {
     placeDisc,
     countDiscsByPlayer,
     createInitialGame,
-    formatBoardPosition,
     isGameOver,
-    legalDiscPlacements,
-    parseBoardPosition,
-    renderBoard,
     winner,
-    type GameState,
     type Player,
 } from "./game.ts";
+import {
+    clearScreen,
+    formatBoardPosition,
+    parseBoardPosition,
+    playerLabel,
+    renderFinalBoard,
+    renderGame,
+    squarePrompt,
+} from "./ui.ts";
 
-const HUMAN_PLAYER: Player = "B";
 const AI_PLAYER: Player = "W";
-
-function colorize(text: string, color: string): string {
-    return output.isTTY ? `\x1b[${color}m${text}\x1b[0m` : text;
-}
-
-function playerName(player: Player): string {
-    return player === "B" ? "Black (●)" : "White (○)";
-}
-
-function status(game: GameState): string {
-    const counts = countDiscsByPlayer(game.board);
-    const legalPositions = legalDiscPlacements(game.board, game.current);
-
-    return [
-        renderBoard(game.board, {
-            legalPositions,
-            graphical: true,
-        }),
-        "",
-        `Turn: ${playerName(game.current)}`,
-        `Score: ● ${counts.B} - ○ ${counts.W}`,
-        `Legal squares: ${legalPositions.map(formatBoardPosition).join(", ") || "none"}`,
-    ].join("\n");
-}
-
-function screen(game: GameState, message?: string): string {
-    return [
-        "Reversi CLI",
-        `You are ${playerName(HUMAN_PLAYER)}. CPU is ${playerName(AI_PLAYER)}.`,
-        "Legal squares are +.",
-        "",
-        status(game),
-        "",
-        message ? `Message: ${message}` : "",
-    ].join("\n");
-}
-
-function render(game: GameState, message?: string): void {
-    if (output.isTTY) {
-        cursorTo(output, 0, 0);
-        clearScreenDown(output);
-    }
-
-    output.write(`${screen(game, message)}\n`);
-}
-
-function squarePrompt(): string {
-    return `\n${colorize("Enter d3 or 3 4. q to quit.", "90")}\n\nSquare> `;
-}
 
 async function main(): Promise<void> {
     const rl = createInterface({ input, output });
@@ -77,7 +30,7 @@ async function main(): Promise<void> {
     try {
         while (!isGameOver(game.board)) {
             if (game.current === AI_PLAYER) {
-                render(game, message ?? "CPU is thinking...");
+                renderGame(game, message ?? "CPU is thinking...");
 
                 const aiPlacement = chooseAiPlacement(game);
                 if (!aiPlacement) {
@@ -96,16 +49,13 @@ async function main(): Promise<void> {
                 continue;
             }
 
-            render(game, message);
+            renderGame(game, message);
 
             const answer = await rl.question(squarePrompt());
             const trimmed = answer.trim().toLowerCase();
 
             if (trimmed === "q" || trimmed === "quit" || trimmed === "exit") {
-                if (output.isTTY) {
-                    cursorTo(output, 0, 0);
-                    clearScreenDown(output);
-                }
+                clearScreen();
                 console.log("Bye.");
                 return;
             }
@@ -124,9 +74,9 @@ async function main(): Promise<void> {
 
             if (result.game.current === game.current) {
                 const skipped = game.current === "B" ? "White" : "Black";
-                message = `${skipped} has no legal squares. ${playerName(game.current)} places again.`;
+                message = `${skipped} has no legal squares. ${playerLabel(game.current)} places again.`;
             } else {
-                message = `${playerName(game.current)} placed at ${formatBoardPosition(position)} and flipped ${result.flipped.length}.`;
+                message = `${playerLabel(game.current)} placed at ${formatBoardPosition(position)} and flipped ${result.flipped.length}.`;
             }
 
             game = result.game;
@@ -135,16 +85,13 @@ async function main(): Promise<void> {
         rl.close();
     }
 
-    if (output.isTTY) {
-        cursorTo(output, 0, 0);
-        clearScreenDown(output);
-    }
+    clearScreen();
 
-    console.log(renderBoard(game.board, { graphical: true }));
+    console.log(renderFinalBoard(game));
     const counts = countDiscsByPlayer(game.board);
     const result = winner(game.board);
     console.log(`Final score: ● ${counts.B} - ○ ${counts.W}`);
-    console.log(result === "draw" ? "Draw." : `${playerName(result)} wins.`);
+    console.log(result === "draw" ? "Draw." : `${playerLabel(result)} wins.`);
 }
 
 main().catch((error: unknown) => {

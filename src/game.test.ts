@@ -3,26 +3,22 @@ import test from "node:test";
 import {
     placeDisc,
     createInitialGame,
-    formatBoardPosition,
     legalDiscPlacements,
-    parseBoardPosition,
+    positionKey,
 } from "./game.ts";
 
 test("initial board has four legal squares for black", () => {
     const game = createInitialGame();
     const legalPositions = legalDiscPlacements(game.board, game.current)
-        .map(formatBoardPosition)
+        .map(positionKey)
         .sort();
 
-    assert.deepEqual(legalPositions, ["c4", "d3", "e6", "f5"]);
+    assert.deepEqual(legalPositions, ["2,3", "3,2", "4,5", "5,4"]);
 });
 
 test("placing a disc flips enclosed discs and changes turn", () => {
     const game = createInitialGame();
-    const position = parseBoardPosition("d3");
-    assert.ok(position);
-
-    const result = placeDisc(game, position);
+    const result = placeDisc(game, { row: 2, col: 3 });
     assert.equal(result.ok, true);
 
     if (result.ok) {
@@ -38,12 +34,4 @@ test("rejects illegal placements", () => {
     const result = placeDisc(game, { row: 0, col: 0 });
 
     assert.equal(result.ok, false);
-});
-
-test("parses algebraic and numeric board positions", () => {
-    assert.deepEqual(parseBoardPosition("a1"), { row: 0, col: 0 });
-    assert.deepEqual(parseBoardPosition("H8"), { row: 7, col: 7 });
-    assert.deepEqual(parseBoardPosition("3 4"), { row: 2, col: 3 });
-    assert.deepEqual(parseBoardPosition("3,4"), { row: 2, col: 3 });
-    assert.equal(parseBoardPosition("z9"), null);
 });

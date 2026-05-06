@@ -4,8 +4,8 @@ import { chooseAiPlacement } from "./ai.ts";
 import {
     placeDisc,
     createInitialGame,
-    formatBoardPosition,
     legalDiscPlacements,
+    positionsEqual,
     type GameState,
 } from "./game.ts";
 
@@ -15,10 +15,8 @@ test("AI chooses a legal square", () => {
 
     assert.ok(aiPlacement);
     assert.ok(
-        legalDiscPlacements(game.board, game.current).some(
-            (position) =>
-                formatBoardPosition(position) ===
-                formatBoardPosition(aiPlacement.position),
+        legalDiscPlacements(game.board, game.current).some((position) =>
+            positionsEqual(position, aiPlacement.position),
         ),
     );
 });
@@ -41,7 +39,7 @@ test("AI prefers an available corner", () => {
     const aiPlacement = chooseAiPlacement(game);
 
     assert.ok(aiPlacement);
-    assert.equal(formatBoardPosition(aiPlacement.position), "a1");
+    assert.deepEqual(aiPlacement.position, { row: 0, col: 0 });
 });
 
 test("AI placement can be applied to the game", () => {
