@@ -1,13 +1,11 @@
 import {
   applyMove,
+  countPieces,
   legalMoves,
   opponent,
-  type GameState
-} from "./game.ts";
-import {
-  countDiscsByPlayer,
+  type GameState,
   type Position
-} from "./board.ts";
+} from "./game.ts";
 
 export type AiMove = {
   move: Position;
@@ -37,7 +35,7 @@ export function scoreMove(game: GameState, move: Position): number {
 
   const player = game.current;
   const other = opponent(player);
-  const counts = countDiscsByPlayer(result.game.board);
+  const counts = countPieces(result.game.board);
   const pieceDifference = counts[player] - counts[other];
   const mobilityDifference =
     legalMoves(result.game.board, player).length - legalMoves(result.game.board, other).length;

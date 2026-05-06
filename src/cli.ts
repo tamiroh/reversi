@@ -4,19 +4,17 @@ import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 import { chooseAiMove } from "./ai.ts";
 import {
-  countDiscsByPlayer,
-  formatMove,
-  parseMove,
-  renderBoard,
-  type Player
-} from "./board.ts";
-import {
   applyMove,
+  countPieces,
   createInitialGame,
+  formatMove,
   isGameOver,
   legalMoves,
+  parseMove,
+  renderBoard,
   winner,
-  type GameState
+  type GameState,
+  type Player
 } from "./game.ts";
 
 const HUMAN_PLAYER: Player = "B";
@@ -27,7 +25,7 @@ function playerName(player: Player): string {
 }
 
 function status(game: GameState): string {
-  const counts = countDiscsByPlayer(game.board);
+  const counts = countPieces(game.board);
   const moves = legalMoves(game.board, game.current);
 
   return [
@@ -133,7 +131,7 @@ async function main(): Promise<void> {
   }
 
   console.log(renderBoard(game.board, { graphical: true }));
-  const counts = countDiscsByPlayer(game.board);
+  const counts = countPieces(game.board);
   const result = winner(game.board);
   console.log(`Final score: ● ${counts.B} - ○ ${counts.W}`);
   console.log(result === "draw" ? "Draw." : `${playerName(result)} wins.`);
