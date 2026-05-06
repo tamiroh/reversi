@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
+import { setTimeout as delay } from "node:timers/promises";
 import { chooseAiPlacement } from "./ai.ts";
 import {
     placeDisc,
@@ -21,6 +22,8 @@ import {
 } from "./ui.ts";
 
 const AI_PLAYER: Player = "W";
+const AI_THINKING_DELAY_MS = 700;
+const PLACEMENT_HIGHLIGHT_DELAY_MS = 700;
 
 async function main(): Promise<void> {
     const rl = createInterface({ input, output });
@@ -31,6 +34,7 @@ async function main(): Promise<void> {
         while (!isGameOver(game.board)) {
             if (game.current === AI_PLAYER) {
                 renderGame(game, message ?? "CPU is thinking...");
+                await delay(AI_THINKING_DELAY_MS);
 
                 const aiPlacement = chooseAiPlacement(game);
                 if (!aiPlacement) {
@@ -46,6 +50,8 @@ async function main(): Promise<void> {
 
                 message = `CPU placed at ${formatBoardPosition(aiPlacement.position)} and flipped ${result.flipped.length}.`;
                 game = result.game;
+                renderGame(game, message, aiPlacement.position);
+                await delay(PLACEMENT_HIGHLIGHT_DELAY_MS);
                 continue;
             }
 
@@ -80,6 +86,8 @@ async function main(): Promise<void> {
             }
 
             game = result.game;
+            renderGame(game, message, position);
+            await delay(PLACEMENT_HIGHLIGHT_DELAY_MS);
         }
     } finally {
         rl.close();

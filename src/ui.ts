@@ -20,11 +20,16 @@ const EMPTY: Cell = ".";
 
 type RenderBoardOptions = {
     legalPositions?: Position[];
+    highlightedPosition?: Position;
     graphical?: boolean;
 };
 
 function colorize(text: string, color: string): string {
     return output.isTTY ? `\x1b[${color}m${text}\x1b[0m` : text;
+}
+
+function blink(text: string): string {
+    return output.isTTY ? `\x1b[5m${text}\x1b[0m` : text;
 }
 
 function playerName(player: Player): string {
@@ -34,22 +39,27 @@ function playerName(player: Player): string {
 function renderCell(
     cell: Cell,
     isLegalPosition: boolean,
+    isHighlighted: boolean,
     graphical: boolean,
 ): string {
     if (!graphical) {
-        if (cell !== EMPTY) return cell;
-        return isLegalPosition ? "*" : ".";
+        if (cell !== EMPTY) return isHighlighted ? colorize(cell, "93") : cell;
+        return isLegalPosition ? blink("*") : ".";
     }
 
-    if (cell === "B") return "●";
-    if (cell === "W") return "○";
-    return isLegalPosition ? "+" : "·";
+    if (cell === "B") return isHighlighted ? colorize("●", "93") : "●";
+    if (cell === "W") return isHighlighted ? colorize("○", "93") : "○";
+    return isLegalPosition ? blink("+") : "·";
 }
 
-function renderLargeCell(cell: Cell, isLegalPosition: boolean): string {
-    if (cell === "B") return " ● ";
-    if (cell === "W") return " ○ ";
-    return isLegalPosition ? " + " : "   ";
+function renderLargeCell(
+    cell: Cell,
+    isLegalPosition: boolean,
+    isHighlighted: boolean,
+): string {
+    if (cell === "B") return ` ${isHighlighted ? colorize("●", "93") : "●"} `;
+    if (cell === "W") return ` ${isHighlighted ? colorize("○", "93") : "○"} `;
+    return isLegalPosition ? ` ${blink("+")} ` : "   ";
 }
 
 function renderBoard(
@@ -60,6 +70,9 @@ function renderBoard(
         ? { legalPositions: positionsOrOptions, graphical: false }
         : positionsOrOptions;
     const legalPositions = options.legalPositions ?? [];
+    const highlightedPositionKey = options.highlightedPosition
+        ? positionKey(options.highlightedPosition)
+        : undefined;
     const graphical = options.graphical ?? false;
     const legalPositionKeys = new Set(legalPositions.map(positionKey));
 
@@ -71,6 +84,7 @@ function renderBoard(
                 renderCell(
                     cell,
                     legalPositionKeys.has(positionKey({ row, col })),
+                    highlightedPositionKey === positionKey({ row, col }),
                     false,
                 ),
             );
@@ -90,6 +104,7 @@ function renderBoard(
             renderLargeCell(
                 cell,
                 legalPositionKeys.has(positionKey({ row, col })),
+                highlightedPositionKey === positionKey({ row, col }),
             ),
         );
         lines.push(`${row + 1} │${cells.join("│")}│`);
@@ -103,29 +118,26 @@ function renderBoard(
     return lines.join("\n");
 }
 
-function status(game: GameState): string {
+function screen(
+    game: GameState,
+    message?: string,
+    highlightedPosition?: Position,
+): string {
     const counts = countDiscsByPlayer(game.board);
     const legalPositions = legalDiscPlacements(game.board, game.current);
 
     return [
+        "",
         renderBoard(game.board, {
             legalPositions,
+            highlightedPosition,
             graphical: true,
         }),
         "",
+        `You are ${playerName(HUMAN_PLAYER)}. CPU is ${playerName(AI_PLAYER)}.`,
+        "",
         `Turn: ${playerName(game.current)}`,
         `Score: ● ${counts.B} - ○ ${counts.W}`,
-        `Legal squares: ${legalPositions.map(formatBoardPosition).join(", ") || "none"}`,
-    ].join("\n");
-}
-
-function screen(game: GameState, message?: string): string {
-    return [
-        "Reversi CLI",
-        `You are ${playerName(HUMAN_PLAYER)}. CPU is ${playerName(AI_PLAYER)}.`,
-        "Legal squares are +.",
-        "",
-        status(game),
         "",
         message ? `Message: ${message}` : "",
     ].join("\n");
@@ -138,9 +150,13 @@ export function clearScreen(): void {
     }
 }
 
-export function renderGame(game: GameState, message?: string): void {
+export function renderGame(
+    game: GameState,
+    message?: string,
+    highlightedPosition?: Position,
+): void {
     clearScreen();
-    output.write(`${screen(game, message)}\n`);
+    output.write(`${screen(game, message, highlightedPosition)}\n`);
 }
 
 export function renderFinalBoard(game: GameState): string {
