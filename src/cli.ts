@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { clearScreenDown, cursorTo } from "node:readline";
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 import {
@@ -32,41 +33,64 @@ function status(game: GameState): string {
   ].join("\n");
 }
 
+function screen(game: GameState, message?: string): string {
+  return [
+    "Reversi CLI",
+    "Enter moves like d3 or 3 4. Enter q to quit.",
+    "",
+    status(game),
+    "",
+    message ? `Message: ${message}` : ""
+  ].join("\n");
+}
+
+function render(game: GameState, message?: string): void {
+  if (output.isTTY) {
+    cursorTo(output, 0, 0);
+    clearScreenDown(output);
+  }
+
+  output.write(`${screen(game, message)}\n`);
+}
+
 async function main(): Promise<void> {
   const rl = createInterface({ input, output });
   let game = createInitialGame();
-
-  console.log("Reversi CLI");
-  console.log("Enter moves like d3 or 3 4. Enter q to quit.");
+  let message: string | undefined;
 
   try {
     while (!isGameOver(game.board)) {
-      console.log("");
-      console.log(status(game));
+      render(game, message);
 
-      const answer = await rl.question("> ");
+      const answer = await rl.question("Move> ");
       const trimmed = answer.trim().toLowerCase();
 
       if (trimmed === "q" || trimmed === "quit" || trimmed === "exit") {
+        if (output.isTTY) {
+          cursorTo(output, 0, 0);
+          clearScreenDown(output);
+        }
         console.log("Bye.");
         return;
       }
 
       const move = parseMove(answer);
       if (!move) {
-        console.log("Use a square like d3, or row and column like 3 4.");
+        message = "Use a square like d3, or row and column like 3 4.";
         continue;
       }
 
       const result = applyMove(game, move);
       if (!result.ok) {
-        console.log(result.reason);
+        message = result.reason;
         continue;
       }
 
       if (result.game.current === game.current) {
         const skipped = game.current === "B" ? "White" : "Black";
-        console.log(`${skipped} has no legal moves. ${playerName(game.current)} moves again.`);
+        message = `${skipped} has no legal moves. ${playerName(game.current)} moves again.`;
+      } else {
+        message = `${playerName(game.current)} played ${formatMove(move)} and flipped ${result.flipped.length}.`;
       }
 
       game = result.game;
@@ -75,7 +99,11 @@ async function main(): Promise<void> {
     rl.close();
   }
 
-  console.log("");
+  if (output.isTTY) {
+    cursorTo(output, 0, 0);
+    clearScreenDown(output);
+  }
+
   console.log(renderBoard(game.board));
   const counts = countPieces(game.board);
   const result = winner(game.board);
