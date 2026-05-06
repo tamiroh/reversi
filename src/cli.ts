@@ -17,7 +17,7 @@ import {
 } from "./game.ts";
 
 function playerName(player: Player): string {
-  return player === "B" ? "Black (B)" : "White (W)";
+  return player === "B" ? "Black (●)" : "White (○)";
 }
 
 function status(game: GameState): string {
@@ -25,10 +25,13 @@ function status(game: GameState): string {
   const moves = legalMoves(game.board, game.current);
 
   return [
-    renderBoard(game.board, moves),
+    renderBoard(game.board, {
+      moves,
+      graphical: true
+    }),
     "",
     `Turn: ${playerName(game.current)}`,
-    `Score: B ${counts.B} - W ${counts.W}`,
+    `Score: ● ${counts.B} - ○ ${counts.W}`,
     `Legal moves: ${moves.map(formatMove).join(", ") || "none"}`
   ].join("\n");
 }
@@ -36,7 +39,7 @@ function status(game: GameState): string {
 function screen(game: GameState, message?: string): string {
   return [
     "Reversi CLI",
-    "Enter moves like d3 or 3 4. Enter q to quit.",
+    "Enter moves like d3 or 3 4. Legal moves are +. Enter q to quit.",
     "",
     status(game),
     "",
@@ -104,10 +107,10 @@ async function main(): Promise<void> {
     clearScreenDown(output);
   }
 
-  console.log(renderBoard(game.board));
+  console.log(renderBoard(game.board, { graphical: true }));
   const counts = countPieces(game.board);
   const result = winner(game.board);
-  console.log(`Final score: B ${counts.B} - W ${counts.W}`);
+  console.log(`Final score: ● ${counts.B} - ○ ${counts.W}`);
   console.log(result === "draw" ? "Draw." : `${playerName(result)} wins.`);
 }
 

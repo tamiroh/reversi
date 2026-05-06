@@ -15,6 +15,11 @@ export type GameState = {
   current: Player;
 };
 
+export type RenderBoardOptions = {
+  moves?: Position[];
+  graphical?: boolean;
+};
+
 const BOARD_SIZE = 8;
 const EMPTY: Cell = ".";
 const DIRECTIONS: Position[] = [
@@ -178,17 +183,53 @@ export function formatMove(move: Position): string {
   return `${String.fromCharCode("a".charCodeAt(0) + move.col)}${move.row + 1}`;
 }
 
-export function renderBoard(board: Cell[][], moves: Position[] = []): string {
-  const moveKeys = new Set(moves.map((move) => `${move.row},${move.col}`));
-  const lines = ["  a b c d e f g h"];
-
-  for (let row = 0; row < BOARD_SIZE; row += 1) {
-    const cells = board[row].map((cell, col) => {
-      if (cell !== EMPTY) return cell;
-      return moveKeys.has(`${row},${col}`) ? "*" : ".";
-    });
-    lines.push(`${row + 1} ${cells.join(" ")}`);
+function renderCell(cell: Cell, isLegalMove: boolean, graphical: boolean): string {
+  if (!graphical) {
+    if (cell !== EMPTY) return cell;
+    return isLegalMove ? "*" : ".";
   }
 
+  if (cell === "B") return "●";
+  if (cell === "W") return "○";
+  return isLegalMove ? "+" : "·";
+}
+
+export function renderBoard(
+  board: Cell[][],
+  movesOrOptions: Position[] | RenderBoardOptions = []
+): string {
+  const options = Array.isArray(movesOrOptions)
+    ? { moves: movesOrOptions, graphical: false }
+    : movesOrOptions;
+  const moves = options.moves ?? [];
+  const graphical = options.graphical ?? false;
+  const moveKeys = new Set(moves.map((move) => `${move.row},${move.col}`));
+
+  if (!graphical) {
+    const lines = ["  a b c d e f g h"];
+
+    for (let row = 0; row < BOARD_SIZE; row += 1) {
+      const cells = board[row].map((cell, col) =>
+        renderCell(cell, moveKeys.has(`${row},${col}`), false)
+      );
+      lines.push(`${row + 1} ${cells.join(" ")}`);
+    }
+
+    return lines.join("\n");
+  }
+
+  const lines = [
+    "    a b c d e f g h",
+    "  ┌─────────────────┐"
+  ];
+
+  for (let row = 0; row < BOARD_SIZE; row += 1) {
+    const cells = board[row].map((cell, col) =>
+      renderCell(cell, moveKeys.has(`${row},${col}`), true)
+    );
+    lines.push(`${row + 1} │ ${cells.join(" ")} │`);
+  }
+
+  lines.push("  └─────────────────┘");
   return lines.join("\n");
 }

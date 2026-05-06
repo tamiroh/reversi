@@ -16,7 +16,7 @@ npm start
 ```
 
 Enter moves using board coordinates like `d3`, or row and column numbers like `3 4`.
-Legal moves are shown as `*`.
+Legal moves are shown as `+`.
 
 Black (`B`) moves first.
 
