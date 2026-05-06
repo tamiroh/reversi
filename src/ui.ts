@@ -36,6 +36,10 @@ function playerName(player: Player): string {
     return player === "B" ? "Black (●)" : "White (○)";
 }
 
+function actorName(player: Player): string {
+    return player === HUMAN_PLAYER ? "You (●)" : "CPU (○)";
+}
+
 function renderCell(
     cell: Cell,
     isLegalPosition: boolean,
@@ -134,12 +138,9 @@ function screen(
             graphical: true,
         }),
         "",
-        `You are ${playerName(HUMAN_PLAYER)}. CPU is ${playerName(AI_PLAYER)}.`,
+        `Turn: ${actorName(game.current)}`,
         "",
-        `Turn: ${playerName(game.current)}`,
-        `Score: ● ${counts.B} - ○ ${counts.W}`,
-        "",
-        message ? `Message: ${message}` : "",
+        message ? message : "",
     ].join("\n");
 }
 
@@ -164,7 +165,7 @@ export function renderFinalBoard(game: GameState): string {
 }
 
 export function squarePrompt(): string {
-    return `\n${colorize("Enter d3 or 3 4. q to quit.", "90")}\n\nSquare> `;
+    return `\n${colorize("Enter d3 or 3 4. q to quit.", "90")}\nSquare> `;
 }
 
 export function playerLabel(player: Player): string {
