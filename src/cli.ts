@@ -20,6 +20,10 @@ import {
 const HUMAN_PLAYER: Player = "B";
 const AI_PLAYER: Player = "W";
 
+function colorize(text: string, color: string): string {
+    return output.isTTY ? `\x1b[${color}m${text}\x1b[0m` : text;
+}
+
 function playerName(player: Player): string {
     return player === "B" ? "Black (●)" : "White (○)";
 }
@@ -44,7 +48,7 @@ function screen(game: GameState, message?: string): string {
     return [
         "Reversi CLI",
         `You are ${playerName(HUMAN_PLAYER)}. CPU is ${playerName(AI_PLAYER)}.`,
-        "Enter a square like d3 or 3 4. Legal squares are +. Enter q to quit.",
+        "Legal squares are +.",
         "",
         status(game),
         "",
@@ -59,6 +63,10 @@ function render(game: GameState, message?: string): void {
     }
 
     output.write(`${screen(game, message)}\n`);
+}
+
+function squarePrompt(): string {
+    return `\n${colorize("Enter d3 or 3 4. q to quit.", "90")}\n\nSquare> `;
 }
 
 async function main(): Promise<void> {
@@ -90,7 +98,7 @@ async function main(): Promise<void> {
 
             render(game, message);
 
-            const answer = await rl.question("Square> ");
+            const answer = await rl.question(squarePrompt());
             const trimmed = answer.trim().toLowerCase();
 
             if (trimmed === "q" || trimmed === "quit" || trimmed === "exit") {
