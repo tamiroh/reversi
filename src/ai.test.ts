@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { chooseAiMove } from "./ai.ts";
-import { applyMove, createInitialGame, formatMove, legalMoves, type GameState } from "./game.ts";
+import { formatMove } from "./board.ts";
+import { applyMove, createInitialGame, legalMoves, type GameState } from "./game.ts";
 
 test("AI chooses a legal move", () => {
   const game = createInitialGame();

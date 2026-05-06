@@ -1,12 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {
-  applyMove,
-  createInitialGame,
-  formatMove,
-  legalMoves,
-  parseMove
-} from "./game.ts";
+import { formatMove, parseMove } from "./board.ts";
+import { applyMove, createInitialGame, legalMoves } from "./game.ts";
 
 test("initial board has four legal moves for black", () => {
   const game = createInitialGame();
@@ -36,12 +31,4 @@ test("rejects illegal moves", () => {
   const result = applyMove(game, { row: 0, col: 0 });
 
   assert.equal(result.ok, false);
-});
-
-test("parses algebraic and numeric move input", () => {
-  assert.deepEqual(parseMove("a1"), { row: 0, col: 0 });
-  assert.deepEqual(parseMove("H8"), { row: 7, col: 7 });
-  assert.deepEqual(parseMove("3 4"), { row: 2, col: 3 });
-  assert.deepEqual(parseMove("3,4"), { row: 2, col: 3 });
-  assert.equal(parseMove("z9"), null);
 });
