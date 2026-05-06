@@ -1,6 +1,6 @@
 # reversi
 
-A small Reversi/Othello game for the terminal, written in TypeScript.
+A small single-player Reversi/Othello game for the terminal, written in TypeScript.
 
 ## Setup
 
@@ -18,7 +18,7 @@ npm start
 Enter moves using board coordinates like `d3`, or row and column numbers like `3 4`.
 Legal moves are shown as `+`.
 
-Black (`B`) moves first.
+You play black (`●`) and move first. The CPU plays white (`○`).
 
 ## Test
 

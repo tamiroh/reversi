@@ -2,6 +2,7 @@
 import { clearScreenDown, cursorTo } from "node:readline";
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
+import { chooseAiMove } from "./ai.ts";
 import {
   applyMove,
   countPieces,
@@ -15,6 +16,9 @@ import {
   type GameState,
   type Player
 } from "./game.ts";
+
+const HUMAN_PLAYER: Player = "B";
+const AI_PLAYER: Player = "W";
 
 function playerName(player: Player): string {
   return player === "B" ? "Black (●)" : "White (○)";
@@ -39,6 +43,7 @@ function status(game: GameState): string {
 function screen(game: GameState, message?: string): string {
   return [
     "Reversi CLI",
+    `You are ${playerName(HUMAN_PLAYER)}. CPU is ${playerName(AI_PLAYER)}.`,
     "Enter moves like d3 or 3 4. Legal moves are +. Enter q to quit.",
     "",
     status(game),
@@ -63,6 +68,24 @@ async function main(): Promise<void> {
 
   try {
     while (!isGameOver(game.board)) {
+      if (game.current === AI_PLAYER) {
+        render(game, message ?? "CPU is thinking...");
+
+        const aiMove = chooseAiMove(game);
+        if (!aiMove) {
+          throw new Error("CPU has no legal moves on its turn.");
+        }
+
+        const result = applyMove(game, aiMove.move);
+        if (!result.ok) {
+          throw new Error(`AI selected an illegal move: ${formatMove(aiMove.move)}`);
+        }
+
+        message = `CPU played ${formatMove(aiMove.move)} and flipped ${result.flipped.length}.`;
+        game = result.game;
+        continue;
+      }
+
       render(game, message);
 
       const answer = await rl.question("Move> ");
