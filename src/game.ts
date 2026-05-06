@@ -194,6 +194,12 @@ function renderCell(cell: Cell, isLegalMove: boolean, graphical: boolean): strin
   return isLegalMove ? "+" : "·";
 }
 
+function renderLargeCell(cell: Cell, isLegalMove: boolean): string {
+  if (cell === "B") return " ● ";
+  if (cell === "W") return " ○ ";
+  return isLegalMove ? " + " : "   ";
+}
+
 export function renderBoard(
   board: Cell[][],
   movesOrOptions: Position[] | RenderBoardOptions = []
@@ -219,17 +225,21 @@ export function renderBoard(
   }
 
   const lines = [
-    "    a b c d e f g h",
-    "  ┌─────────────────┐"
+    "     a   b   c   d   e   f   g   h",
+    "  ┌───┬───┬───┬───┬───┬───┬───┬───┐"
   ];
 
   for (let row = 0; row < BOARD_SIZE; row += 1) {
     const cells = board[row].map((cell, col) =>
-      renderCell(cell, moveKeys.has(`${row},${col}`), true)
+      renderLargeCell(cell, moveKeys.has(`${row},${col}`))
     );
-    lines.push(`${row + 1} │ ${cells.join(" ")} │`);
+    lines.push(`${row + 1} │${cells.join("│")}│`);
+
+    if (row < BOARD_SIZE - 1) {
+      lines.push("  ├───┼───┼───┼───┼───┼───┼───┼───┤");
+    }
   }
 
-  lines.push("  └─────────────────┘");
+  lines.push("  └───┴───┴───┴───┴───┴───┴───┴───┘");
   return lines.join("\n");
 }
