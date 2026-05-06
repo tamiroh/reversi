@@ -96,7 +96,7 @@ export function countDiscsByPlayer(board: Cell[][]): Record<Player, number> {
 // Placement Rules
 //
 
-export function positionsFlippedByDiscPlacement(
+export function discPositionsFlippedByPlacement(
     board: Cell[][],
     player: Player,
     position: Position,
@@ -143,7 +143,7 @@ export function legalDiscPlacements(
     for (let row = 0; row < BOARD_SIZE; row += 1) {
         for (let col = 0; col < BOARD_SIZE; col += 1) {
             if (
-                positionsFlippedByDiscPlacement(board, player, { row, col })
+                discPositionsFlippedByPlacement(board, player, { row, col })
                     .length > 0
             ) {
                 positions.push({ row, col });
@@ -162,7 +162,7 @@ export function placeDisc(
     game: GameState,
     position: Position,
 ): DiscPlacementResult {
-    const flips = positionsFlippedByDiscPlacement(
+    const flips = discPositionsFlippedByPlacement(
         game.board,
         game.current,
         position,
