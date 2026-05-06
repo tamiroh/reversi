@@ -50,7 +50,10 @@ async function main(): Promise<void> {
 
                 message = `CPU placed at ${formatBoardPosition(aiPlacement.position)} and flipped ${result.flipped.length}.`;
                 game = result.game;
-                renderGame(game, message, aiPlacement.position);
+                renderGame(game, message, [
+                    aiPlacement.position,
+                    ...result.flipped,
+                ]);
                 await delay(PLACEMENT_HIGHLIGHT_DELAY_MS);
                 continue;
             }
@@ -86,7 +89,7 @@ async function main(): Promise<void> {
             }
 
             game = result.game;
-            renderGame(game, message, position);
+            renderGame(game, message, [position, ...result.flipped]);
             await delay(PLACEMENT_HIGHLIGHT_DELAY_MS);
         }
     } finally {

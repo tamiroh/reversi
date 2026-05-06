@@ -20,7 +20,7 @@ const EMPTY: Cell = ".";
 
 type RenderBoardOptions = {
     legalPositions?: Position[];
-    highlightedPosition?: Position;
+    highlightedPositions?: Position[];
     graphical?: boolean;
 };
 
@@ -70,9 +70,9 @@ function renderBoard(
         ? { legalPositions: positionsOrOptions, graphical: false }
         : positionsOrOptions;
     const legalPositions = options.legalPositions ?? [];
-    const highlightedPositionKey = options.highlightedPosition
-        ? positionKey(options.highlightedPosition)
-        : undefined;
+    const highlightedPositionKeys = new Set(
+        (options.highlightedPositions ?? []).map(positionKey),
+    );
     const graphical = options.graphical ?? false;
     const legalPositionKeys = new Set(legalPositions.map(positionKey));
 
@@ -84,7 +84,7 @@ function renderBoard(
                 renderCell(
                     cell,
                     legalPositionKeys.has(positionKey({ row, col })),
-                    highlightedPositionKey === positionKey({ row, col }),
+                    highlightedPositionKeys.has(positionKey({ row, col })),
                     false,
                 ),
             );
@@ -104,7 +104,7 @@ function renderBoard(
             renderLargeCell(
                 cell,
                 legalPositionKeys.has(positionKey({ row, col })),
-                highlightedPositionKey === positionKey({ row, col }),
+                highlightedPositionKeys.has(positionKey({ row, col })),
             ),
         );
         lines.push(`${row + 1} │${cells.join("│")}│`);
@@ -121,7 +121,7 @@ function renderBoard(
 function screen(
     game: GameState,
     message?: string,
-    highlightedPosition?: Position,
+    highlightedPositions: Position[] = [],
 ): string {
     const counts = countDiscsByPlayer(game.board);
     const legalPositions = legalDiscPlacements(game.board, game.current);
@@ -130,7 +130,7 @@ function screen(
         "",
         renderBoard(game.board, {
             legalPositions,
-            highlightedPosition,
+            highlightedPositions,
             graphical: true,
         }),
         "",
@@ -153,10 +153,10 @@ export function clearScreen(): void {
 export function renderGame(
     game: GameState,
     message?: string,
-    highlightedPosition?: Position,
+    highlightedPositions: Position[] = [],
 ): void {
     clearScreen();
-    output.write(`${screen(game, message, highlightedPosition)}\n`);
+    output.write(`${screen(game, message, highlightedPositions)}\n`);
 }
 
 export function renderFinalBoard(game: GameState): string {
