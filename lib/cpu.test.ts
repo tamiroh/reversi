@@ -11,12 +11,12 @@ import {
 
 test("CPU chooses a legal square", () => {
     const game = createInitialGame();
-    const cpuPlacement = chooseCpuPlacement(game);
+    const cpuPosition = chooseCpuPlacement(game);
 
-    assert.ok(cpuPlacement);
+    assert.ok(cpuPosition);
     assert.ok(
         legalDiscPlacements(game.board, game.current).some((position) =>
-            positionsEqual(position, cpuPlacement.position),
+            positionsEqual(position, cpuPosition),
         ),
     );
 });
@@ -36,17 +36,17 @@ test("CPU prefers an available corner", () => {
         ],
     };
 
-    const cpuPlacement = chooseCpuPlacement(game);
+    const cpuPosition = chooseCpuPlacement(game);
 
-    assert.ok(cpuPlacement);
-    assert.deepEqual(cpuPlacement.position, { row: 0, col: 0 });
+    assert.ok(cpuPosition);
+    assert.deepEqual(cpuPosition, { row: 0, col: 0 });
 });
 
 test("CPU placement can be applied to the game", () => {
     const game = createInitialGame();
-    const cpuPlacement = chooseCpuPlacement(game);
-    assert.ok(cpuPlacement);
+    const cpuPosition = chooseCpuPlacement(game);
+    assert.ok(cpuPosition);
 
-    const result = placeDisc(game, cpuPlacement.position);
+    const result = placeDisc(game, cpuPosition);
     assert.equal(result.ok, true);
 });

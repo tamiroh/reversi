@@ -59,28 +59,25 @@ async function playCpuTurn(state: AppState): Promise<TurnResult> {
     renderGame(state.game, state.message ?? "CPU is thinking...");
     await delay(CPU_THINKING_DELAY_MS);
 
-    const cpuPlacement = chooseCpuPlacement(state.game);
-    if (!cpuPlacement) {
+    const cpuPosition = chooseCpuPlacement(state.game);
+    if (!cpuPosition) {
         throw new Error("CPU has no legal squares on its turn.");
     }
 
-    const result = placeDisc(state.game, cpuPlacement.position);
+    const result = placeDisc(state.game, cpuPosition);
     if (!result.ok) {
         throw new Error(
-            `CPU selected an illegal square: ${formatBoardPosition(cpuPlacement.position)}`,
+            `CPU selected an illegal square: ${formatBoardPosition(cpuPosition)}`,
         );
     }
 
     const message = placementMessage(
         state.game,
         result.game,
-        cpuPlacement.position,
+        cpuPosition,
         result.flipped.length,
     );
-    renderGame(result.game, message, [
-        cpuPlacement.position,
-        ...result.flipped,
-    ]);
+    renderGame(result.game, message, [cpuPosition, ...result.flipped]);
     await delay(PLACEMENT_HIGHLIGHT_DELAY_MS);
 
     return {

@@ -7,11 +7,6 @@ import {
     type Position,
 } from "./game.ts";
 
-export type CpuPlacement = {
-    position: Position;
-    score: number;
-};
-
 const POSITION_WEIGHTS = [
     [120, -20, 20, 5, 5, 20, -20, 120],
     [-20, -40, -5, -5, -5, -5, -40, -20],
@@ -27,10 +22,7 @@ function comparePositions(a: Position, b: Position): number {
     return a.row - b.row || a.col - b.col;
 }
 
-export function scoreDiscPlacement(
-    game: GameState,
-    position: Position,
-): number {
+function scoreDiscPlacement(game: GameState, position: Position): number {
     const result = placeDisc(game, position);
     if (!result.ok) {
         return Number.NEGATIVE_INFINITY;
@@ -52,7 +44,7 @@ export function scoreDiscPlacement(
     );
 }
 
-export function chooseCpuPlacement(game: GameState): CpuPlacement | null {
+export function chooseCpuPlacement(game: GameState): Position | null {
     const positions = legalDiscPlacements(game.board, game.current);
     if (positions.length === 0) {
         return null;
@@ -66,5 +58,5 @@ export function chooseCpuPlacement(game: GameState): CpuPlacement | null {
         .sort(
             (a, b) =>
                 b.score - a.score || comparePositions(a.position, b.position),
-        )[0];
+        )[0].position;
 }
