@@ -4,14 +4,14 @@
     "private": true,
     "type": "module",
     "bin": {
-        "reversi": "./dist/bin/reversi.js",
-        "reversi-gui": "./dist/bin/reversi-gui.js"
+        "reversi-cli": "./dist/bin/cli.js",
+        "reversi-gui": "./dist/bin/gui.js"
     },
     "scripts": {
         "build": "tsc && node scripts/copy-gui-assets.mjs",
-        "start": "node dist/bin/reversi.js",
-        "dev": "node bin/reversi.ts",
-        "gui": "npm run build && env -u ELECTRON_RUN_AS_NODE electron dist/bin/reversi-gui.js",
+        "start": "node dist/bin/cli.js",
+        "dev": "node bin/cli.ts",
+        "gui": "npm run build && env -u ELECTRON_RUN_AS_NODE electron dist/bin/gui.js",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "test": "node --test dist/**/*.test.js",

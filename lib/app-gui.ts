@@ -25,7 +25,7 @@ function createMainWindow(): void {
     );
 }
 
-export function runElectronApp(): void {
+export function runGuiApp(): void {
     app.on("window-all-closed", () => {
         if (process.platform !== "darwin") {
             app.quit();
