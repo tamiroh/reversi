@@ -3,6 +3,7 @@ import {
     countDiscsByPlayer,
     legalDiscPlacements,
     opponent,
+    type BoardGrid,
     type GameState,
     type Position,
 } from "./game.ts";
@@ -16,7 +17,7 @@ const POSITION_WEIGHTS = [
     [20, -5, 15, 3, 3, 15, -5, 20],
     [-20, -40, -5, -5, -5, -5, -40, -20],
     [120, -20, 20, 5, 5, 20, -20, 120],
-];
+] satisfies BoardGrid<number>;
 
 function comparePositions(a: Position, b: Position): number {
     return a.row - b.row || a.col - b.col;

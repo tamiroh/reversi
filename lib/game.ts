@@ -23,8 +23,12 @@ const BOARD_SIZE = 8;
 const EMPTY: Cell = ".";
 
 export type BoardIndex = IntegerRangeFromZero<typeof BOARD_SIZE>;
+export type BoardGrid<Item> = FixedLengthArray<
+    FixedLengthArray<Item, typeof BOARD_SIZE>,
+    typeof BOARD_SIZE
+>;
 export type BoardRow = FixedLengthArray<Cell, typeof BOARD_SIZE>;
-export type Board = FixedLengthArray<BoardRow, typeof BOARD_SIZE>;
+export type Board = BoardGrid<Cell>;
 
 function isBoardIndex(value: number): value is BoardIndex {
     return Number.isInteger(value) && value >= 0 && value < BOARD_SIZE;
