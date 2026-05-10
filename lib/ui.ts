@@ -2,6 +2,7 @@ import {
     type Cell,
     countDiscsByPlayer,
     legalDiscPlacements,
+    positionAt,
     positionKey,
     winner,
     type GameState,
@@ -60,6 +61,15 @@ function renderLargeCell(
     return isLegalPosition ? ` ${blink("+")} ` : "   ";
 }
 
+function positionKeySetHas(
+    positionKeys: Set<string>,
+    row: number,
+    col: number,
+): boolean {
+    const position = positionAt(row, col);
+    return position !== null && positionKeys.has(positionKey(position));
+}
+
 function renderBoard(
     board: Cell[][],
     positionsOrOptions: Position[] | RenderBoardOptions = [],
@@ -81,8 +91,8 @@ function renderBoard(
             const cells = board[row].map((cell, col) =>
                 renderCell(
                     cell,
-                    legalPositionKeys.has(positionKey({ row, col })),
-                    highlightedPositionKeys.has(positionKey({ row, col })),
+                    positionKeySetHas(legalPositionKeys, row, col),
+                    positionKeySetHas(highlightedPositionKeys, row, col),
                     false,
                 ),
             );
@@ -101,8 +111,8 @@ function renderBoard(
         const cells = board[row].map((cell, col) =>
             renderLargeCell(
                 cell,
-                legalPositionKeys.has(positionKey({ row, col })),
-                highlightedPositionKeys.has(positionKey({ row, col })),
+                positionKeySetHas(legalPositionKeys, row, col),
+                positionKeySetHas(highlightedPositionKeys, row, col),
             ),
         );
         lines.push(`${row + 1} │${cells.join("│")}│`);
@@ -182,18 +192,15 @@ export function parseBoardPosition(input: string): Position | null {
     const text = input.trim().toLowerCase();
     const algebraic = /^([a-h])([1-8])$/.exec(text);
     if (algebraic) {
-        return {
-            col: algebraic[1].charCodeAt(0) - "a".charCodeAt(0),
-            row: Number(algebraic[2]) - 1,
-        };
+        return positionAt(
+            Number(algebraic[2]) - 1,
+            algebraic[1].charCodeAt(0) - "a".charCodeAt(0),
+        );
     }
 
     const numeric = /^([1-8])\s*,?\s*([1-8])$/.exec(text);
     if (numeric) {
-        return {
-            row: Number(numeric[1]) - 1,
-            col: Number(numeric[2]) - 1,
-        };
+        return positionAt(Number(numeric[1]) - 1, Number(numeric[2]) - 1);
     }
 
     return null;

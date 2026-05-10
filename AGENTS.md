@@ -55,6 +55,13 @@ Keep related functions in the matching section. Reorder within a file when it im
 - Keep terminal input simple and keyboard-driven with typed squares such as `d3` or `3 4`.
 - Keep CPU player logic independent in `lib/cpu.ts`; it should depend on public game APIs rather than owning rule logic.
 
+## Error Handling
+
+- Use return values for expected failures, such as invalid user input, illegal disc placements, and no available CPU square.
+- Use `null` for absent optional values and discriminated unions for domain results that need a reason.
+- Throw `Error` only for unexpected internal inconsistencies that should be unreachable if callers obey the public API.
+- Error messages should describe the violated assumption concretely.
+
 ## Testing
 
 - Add focused tests when changing game rules or CPU scoring.

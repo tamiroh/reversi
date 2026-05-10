@@ -9,23 +9,6 @@ export function opponent(player: Player): Player {
 }
 
 //
-// Positions
-//
-
-export type Position = {
-    row: number;
-    col: number;
-};
-
-export function positionsEqual(left: Position, right: Position): boolean {
-    return left.row === right.row && left.col === right.col;
-}
-
-export function positionKey(position: Position): string {
-    return `${position.row},${position.col}`;
-}
-
-//
 // Board
 //
 
@@ -34,16 +17,36 @@ export type Cell = Player | ".";
 const BOARD_SIZE = 8;
 const EMPTY: Cell = ".";
 
+type IntegerRangeFromZero<
+    Size extends number,
+    Values extends number[] = [],
+> = Values["length"] extends Size
+    ? Values[number]
+    : IntegerRangeFromZero<Size, [...Values, Values["length"]]>;
+
+export type BoardIndex = IntegerRangeFromZero<typeof BOARD_SIZE>;
+
+function isBoardIndex(value: number): value is BoardIndex {
+    return Number.isInteger(value) && value >= 0 && value < BOARD_SIZE;
+}
+
+const BOARD_INDEXES = Array.from(
+    { length: BOARD_SIZE },
+    (_, index): BoardIndex => {
+        if (!isBoardIndex(index)) {
+            throw new Error(`Invalid board index: ${index}`);
+        }
+
+        return index;
+    },
+);
+
 export function boardSize(): number {
     return BOARD_SIZE;
 }
 
 export function cloneBoard(board: Cell[][]): Cell[][] {
     return board.map((row) => [...row]);
-}
-
-export function isInside(row: number, col: number): boolean {
-    return row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE;
 }
 
 export function countDiscsByPlayer(board: Cell[][]): Record<Player, number> {
@@ -58,6 +61,35 @@ export function countDiscsByPlayer(board: Cell[][]): Record<Player, number> {
     }
 
     return counts;
+}
+
+//
+// Positions
+//
+
+export type Position = {
+    row: BoardIndex;
+    col: BoardIndex;
+};
+
+export function positionAt(row: number, col: number): Position | null {
+    if (!isBoardIndex(row) || !isBoardIndex(col)) {
+        return null;
+    }
+
+    return { row, col };
+}
+
+export function positionsEqual(left: Position, right: Position): boolean {
+    return left.row === right.row && left.col === right.col;
+}
+
+export function positionKey(position: Position): string {
+    return `${position.row},${position.col}`;
+}
+
+export function isInside(row: number, col: number): boolean {
+    return positionAt(row, col) !== null;
 }
 
 //
@@ -118,20 +150,20 @@ export function discPositionsFlippedByPlacement(
 
     for (const direction of DIRECTIONS) {
         const line: Position[] = [];
-        let row = position.row + direction.rowOffset;
-        let col = position.col + direction.colOffset;
+        let next = positionAt(
+            position.row + direction.rowOffset,
+            position.col + direction.colOffset,
+        );
 
-        while (isInside(row, col) && board[row][col] === other) {
-            line.push({ row, col });
-            row += direction.rowOffset;
-            col += direction.colOffset;
+        while (next && board[next.row][next.col] === other) {
+            line.push(next);
+            next = positionAt(
+                next.row + direction.rowOffset,
+                next.col + direction.colOffset,
+            );
         }
 
-        if (
-            line.length > 0 &&
-            isInside(row, col) &&
-            board[row][col] === player
-        ) {
+        if (line.length > 0 && next && board[next.row][next.col] === player) {
             allFlips.push(...line);
         }
     }
@@ -145,8 +177,8 @@ export function legalDiscPlacements(
 ): Position[] {
     const positions: Position[] = [];
 
-    for (let row = 0; row < BOARD_SIZE; row += 1) {
-        for (let col = 0; col < BOARD_SIZE; col += 1) {
+    for (const row of BOARD_INDEXES) {
+        for (const col of BOARD_INDEXES) {
             if (
                 discPositionsFlippedByPlacement(board, player, { row, col })
                     .length > 0
