@@ -1,4 +1,5 @@
 import {
+    type Board,
     type Cell,
     countDiscsByPlayer,
     legalDiscPlacements,
@@ -71,7 +72,7 @@ function positionKeySetHas(
 }
 
 function renderBoard(
-    board: Cell[][],
+    board: Board,
     positionsOrOptions: Position[] | RenderBoardOptions = [],
 ): string {
     const options = Array.isArray(positionsOrOptions)

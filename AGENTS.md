@@ -12,6 +12,7 @@
     - `lib/cpu.ts`: CPU square selection and scoring.
     - `lib/ui.ts`: Reversi UI rendering, messages, and input parsing.
     - `lib/terminal.ts`: reusable terminal output, screen, and ANSI styling helpers.
+    - `lib/type-utils.ts`: reusable TypeScript type utilities.
 
 ## Commands
 

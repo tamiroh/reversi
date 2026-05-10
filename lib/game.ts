@@ -1,3 +1,8 @@
+import {
+    type FixedLengthArray,
+    type IntegerRangeFromZero,
+} from "./type-utils.ts";
+
 //
 // Players
 //
@@ -17,14 +22,9 @@ export type Cell = Player | ".";
 const BOARD_SIZE = 8;
 const EMPTY: Cell = ".";
 
-type IntegerRangeFromZero<
-    Size extends number,
-    Values extends number[] = [],
-> = Values["length"] extends Size
-    ? Values[number]
-    : IntegerRangeFromZero<Size, [...Values, Values["length"]]>;
-
 export type BoardIndex = IntegerRangeFromZero<typeof BOARD_SIZE>;
+export type BoardRow = FixedLengthArray<Cell, typeof BOARD_SIZE>;
+export type Board = FixedLengthArray<BoardRow, typeof BOARD_SIZE>;
 
 function isBoardIndex(value: number): value is BoardIndex {
     return Number.isInteger(value) && value >= 0 && value < BOARD_SIZE;
@@ -45,11 +45,26 @@ export function boardSize(): number {
     return BOARD_SIZE;
 }
 
-export function cloneBoard(board: Cell[][]): Cell[][] {
-    return board.map((row) => [...row]);
+function createBoard(rows: Cell[][]): Board {
+    if (
+        rows.length !== BOARD_SIZE ||
+        rows.some((row) => row.length !== BOARD_SIZE)
+    ) {
+        throw new Error("Board must be 8x8.");
+    }
+
+    return rows as Board;
 }
 
-export function countDiscsByPlayer(board: Cell[][]): Record<Player, number> {
+function createEmptyBoard(): Board {
+    return createBoard(BOARD_INDEXES.map(() => BOARD_INDEXES.map(() => EMPTY)));
+}
+
+export function cloneBoard(board: Board): Board {
+    return createBoard(board.map((row) => [...row]));
+}
+
+export function countDiscsByPlayer(board: Board): Record<Player, number> {
     const counts: Record<Player, number> = { B: 0, W: 0 };
 
     for (const row of board) {
@@ -97,14 +112,12 @@ export function isInside(row: number, col: number): boolean {
 //
 
 export type GameState = {
-    board: Cell[][];
+    board: Board;
     current: Player;
 };
 
 export function createInitialGame(): GameState {
-    const board = Array.from({ length: BOARD_SIZE }, () =>
-        Array.from<Cell>({ length: BOARD_SIZE }).fill(EMPTY),
-    );
+    const board = createEmptyBoard();
 
     board[3][3] = "W";
     board[3][4] = "B";
@@ -134,7 +147,7 @@ const DIRECTIONS = [
 ];
 
 export function discPositionsFlippedByPlacement(
-    board: Cell[][],
+    board: Board,
     player: Player,
     position: Position,
 ): Position[] {
@@ -171,10 +184,7 @@ export function discPositionsFlippedByPlacement(
     return allFlips;
 }
 
-export function legalDiscPlacements(
-    board: Cell[][],
-    player: Player,
-): Position[] {
+export function legalDiscPlacements(board: Board, player: Player): Position[] {
     const positions: Position[] = [];
 
     for (const row of BOARD_INDEXES) {
@@ -231,14 +241,14 @@ export function placeDisc(
 // Game Result
 //
 
-export function isGameOver(board: Cell[][]): boolean {
+export function isGameOver(board: Board): boolean {
     return (
         legalDiscPlacements(board, "B").length === 0 &&
         legalDiscPlacements(board, "W").length === 0
     );
 }
 
-export function winner(board: Cell[][]): Player | "draw" {
+export function winner(board: Board): Player | "draw" {
     const counts = countDiscsByPlayer(board);
     if (counts.B > counts.W) return "B";
     if (counts.W > counts.B) return "W";
