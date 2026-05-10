@@ -3,13 +3,12 @@ import { stdin as input, stdout as output } from "node:process";
 import { setTimeout as delay } from "node:timers/promises";
 import { chooseCpuPlacement } from "./cpu.ts";
 import {
-    WHITE_PLAYER,
     placeDisc,
     createInitialGame,
     isGameOver,
     type GameState,
-    type Player,
 } from "./game.ts";
+import { CPU_PLAYER } from "./player-roles.ts";
 import { clearScreen } from "./terminal.ts";
 import {
     formatBoardPosition,
@@ -21,7 +20,6 @@ import {
     squarePrompt,
 } from "./ui.ts";
 
-const CPU_PLAYER: Player = WHITE_PLAYER;
 const CPU_THINKING_DELAY_MS = 700;
 const PLACEMENT_HIGHLIGHT_DELAY_MS = 700;
 

@@ -15,14 +15,12 @@ import {
     type Player,
     type Position,
 } from "./game.ts";
+import { CPU_PLAYER, HUMAN_PLAYER } from "./player-roles.ts";
 import { blink, clearScreen, colorize, writeTerminal } from "./terminal.ts";
 
 //
 // Terminal UI
 //
-
-const HUMAN_PLAYER: Player = BLACK_PLAYER;
-const CPU_PLAYER: Player = WHITE_PLAYER;
 
 const PLAYER_MARKS: Record<Player, string> = {
     [BLACK_PLAYER]: "●",
