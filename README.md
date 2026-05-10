@@ -13,8 +13,7 @@ npm install
 ## Play in the Terminal
 
 ```sh
-npm run build
-npm start
+npm run cli
 ```
 
 Enter a square using board coordinates like `d3`, or row and column numbers like `3 4`.

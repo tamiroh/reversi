@@ -9,7 +9,8 @@
     },
     "scripts": {
         "build": "node scripts/clean-dist.mjs && tsc && node scripts/copy-gui-assets.mjs",
-        "start": "node dist/bin/cli.js",
+        "start": "npm run cli",
+        "cli": "npm run build && node dist/bin/cli.js",
         "dev": "node bin/cli.ts",
         "gui": "npm run build && env -u ELECTRON_RUN_AS_NODE electron dist/bin/gui.js",
         "format": "prettier --write .",
