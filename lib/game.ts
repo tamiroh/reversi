@@ -7,10 +7,18 @@ import {
 // Players
 //
 
-export type Player = "B" | "W";
+export const BLACK_PLAYER = "B";
+export const WHITE_PLAYER = "W";
+export const PLAYERS = [BLACK_PLAYER, WHITE_PLAYER] as const;
+
+export type Player = (typeof PLAYERS)[number];
+
+export function isPlayer(value: unknown): value is Player {
+    return PLAYERS.includes(value as Player);
+}
 
 export function opponent(player: Player): Player {
-    return player === "B" ? "W" : "B";
+    return player === BLACK_PLAYER ? WHITE_PLAYER : BLACK_PLAYER;
 }
 
 //
@@ -56,22 +64,35 @@ function createBoardGrid<Item>(rows: Item[][]): BoardGrid<Item> {
     return rows as BoardGrid<Item>;
 }
 
+function isCell(value: unknown): value is Cell {
+    return isPlayer(value) || value === EMPTY;
+}
+
+function createBoard(rows: unknown[][]): Board {
+    if (rows.some((row) => row.some((cell) => !isCell(cell)))) {
+        throw new Error("Board contains an invalid cell.");
+    }
+
+    return createBoardGrid(rows) as Board;
+}
+
 function createEmptyBoard(): Board {
-    return createBoardGrid(
-        BOARD_INDEXES.map(() => BOARD_INDEXES.map(() => EMPTY)),
-    );
+    return createBoard(BOARD_INDEXES.map(() => BOARD_INDEXES.map(() => EMPTY)));
 }
 
 export function cloneBoard(board: Board): Board {
-    return createBoardGrid(board.map((row) => [...row]));
+    return createBoard(board.map((row) => [...row]));
 }
 
 export function countDiscsByPlayer(board: Board): Record<Player, number> {
-    const counts: Record<Player, number> = { B: 0, W: 0 };
+    const counts: Record<Player, number> = {
+        [BLACK_PLAYER]: 0,
+        [WHITE_PLAYER]: 0,
+    };
 
     for (const row of board) {
         for (const cell of row) {
-            if (cell === "B" || cell === "W") {
+            if (isPlayer(cell)) {
                 counts[cell] += 1;
             }
         }
@@ -127,12 +148,12 @@ export type GameState = {
 export function createInitialGame(): GameState {
     const board = createEmptyBoard();
 
-    board[3][3] = "W";
-    board[3][4] = "B";
-    board[4][3] = "B";
-    board[4][4] = "W";
+    board[3][3] = WHITE_PLAYER;
+    board[3][4] = BLACK_PLAYER;
+    board[4][3] = BLACK_PLAYER;
+    board[4][4] = WHITE_PLAYER;
 
-    return { board, current: "B" };
+    return { board, current: BLACK_PLAYER };
 }
 
 //
@@ -251,14 +272,14 @@ export function placeDisc(
 
 export function isGameOver(board: Board): boolean {
     return (
-        legalDiscPlacements(board, "B").length === 0 &&
-        legalDiscPlacements(board, "W").length === 0
+        legalDiscPlacements(board, BLACK_PLAYER).length === 0 &&
+        legalDiscPlacements(board, WHITE_PLAYER).length === 0
     );
 }
 
 export function winner(board: Board): Player | "draw" {
     const counts = countDiscsByPlayer(board);
-    if (counts.B > counts.W) return "B";
-    if (counts.W > counts.B) return "W";
+    if (counts[BLACK_PLAYER] > counts[WHITE_PLAYER]) return BLACK_PLAYER;
+    if (counts[WHITE_PLAYER] > counts[BLACK_PLAYER]) return WHITE_PLAYER;
     return "draw";
 }

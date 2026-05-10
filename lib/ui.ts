@@ -1,9 +1,12 @@
 import {
+    BLACK_PLAYER,
     type Board,
     type Cell,
+    WHITE_PLAYER,
     boardPositions,
     countDiscsByPlayer,
     legalDiscPlacements,
+    opponent,
     positionAt,
     positionKey,
     winner,
@@ -17,8 +20,8 @@ import { blink, clearScreen, colorize, writeTerminal } from "./terminal.ts";
 // Terminal UI
 //
 
-const HUMAN_PLAYER: Player = "B";
-const CPU_PLAYER: Player = "W";
+const HUMAN_PLAYER: Player = BLACK_PLAYER;
+const CPU_PLAYER: Player = WHITE_PLAYER;
 const EMPTY: Cell = ".";
 
 type RenderBoardOptions = {
@@ -28,7 +31,7 @@ type RenderBoardOptions = {
 };
 
 function playerName(player: Player): string {
-    return player === "B" ? "Black (●)" : "White (○)";
+    return player === BLACK_PLAYER ? "Black (●)" : "White (○)";
 }
 
 function actorName(player: Player): string {
@@ -48,8 +51,8 @@ function renderCell(
         return isLegalPosition ? blink("*") : ".";
     }
 
-    if (cell === "B") return isHighlighted ? colorize("●", "93") : "●";
-    if (cell === "W") return isHighlighted ? colorize("○", "93") : "○";
+    if (cell === BLACK_PLAYER) return isHighlighted ? colorize("●", "93") : "●";
+    if (cell === WHITE_PLAYER) return isHighlighted ? colorize("○", "93") : "○";
     return isLegalPosition ? blink("+") : "·";
 }
 
@@ -58,8 +61,10 @@ function renderLargeCell(
     isLegalPosition: boolean,
     isHighlighted: boolean,
 ): string {
-    if (cell === "B") return ` ${isHighlighted ? colorize("●", "93") : "●"} `;
-    if (cell === "W") return ` ${isHighlighted ? colorize("○", "93") : "○"} `;
+    if (cell === BLACK_PLAYER)
+        return ` ${isHighlighted ? colorize("●", "93") : "●"} `;
+    if (cell === WHITE_PLAYER)
+        return ` ${isHighlighted ? colorize("○", "93") : "○"} `;
     return isLegalPosition ? ` ${blink("+")} ` : "   ";
 }
 
@@ -181,7 +186,7 @@ export function placementMessage(
     flippedCount: number,
 ): string {
     if (nextGame.current === previousGame.current) {
-        const skipped = playerName(previousGame.current === "B" ? "W" : "B");
+        const skipped = playerName(opponent(previousGame.current));
         return `${skipped} has no legal squares. ${playerName(previousGame.current)} places again.`;
     }
 
