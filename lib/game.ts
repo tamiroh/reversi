@@ -45,10 +45,6 @@ const BOARD_INDEXES = Array.from(
     },
 );
 
-export function boardSize(): number {
-    return BOARD_SIZE;
-}
-
 function createBoard(rows: Cell[][]): Board {
     if (
         rows.length !== BOARD_SIZE ||
