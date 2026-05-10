@@ -35,7 +35,6 @@ const PLAYER_NAMES: Record<Player, string> = {
 type RenderBoardOptions = {
     legalPositions?: Position[];
     highlightedPositions?: Position[];
-    graphical?: boolean;
 };
 
 function playerMark(player: Player): string {
@@ -57,22 +56,6 @@ function renderPlayerMark(player: Player, isHighlighted: boolean): string {
     return isHighlighted ? colorize(mark, "93") : mark;
 }
 
-function renderCell(
-    cell: Cell,
-    isLegalPosition: boolean,
-    isHighlighted: boolean,
-    graphical: boolean,
-): string {
-    if (!graphical) {
-        if (cell !== EMPTY_CELL)
-            return isHighlighted ? colorize(cell, "93") : cell;
-        return isLegalPosition ? blink("*") : EMPTY_CELL;
-    }
-
-    if (cell !== EMPTY_CELL) return renderPlayerMark(cell, isHighlighted);
-    return isLegalPosition ? blink("+") : "·";
-}
-
 function renderLargeCell(
     cell: Cell,
     isLegalPosition: boolean,
@@ -90,37 +73,12 @@ function positionKeySetHas(
     return positionKeys.has(positionKey(position));
 }
 
-function renderBoard(
-    board: Board,
-    positionsOrOptions: Position[] | RenderBoardOptions = [],
-): string {
-    const options = Array.isArray(positionsOrOptions)
-        ? { legalPositions: positionsOrOptions, graphical: false }
-        : positionsOrOptions;
+function renderBoard(board: Board, options: RenderBoardOptions = {}): string {
     const legalPositions = options.legalPositions ?? [];
     const highlightedPositionKeys = new Set(
         (options.highlightedPositions ?? []).map(positionKey),
     );
-    const graphical = options.graphical ?? false;
     const legalPositionKeys = new Set(legalPositions.map(positionKey));
-
-    if (!graphical) {
-        const lines = ["  a b c d e f g h"];
-
-        for (const row of boardPositions()) {
-            const cells = row.map((position) =>
-                renderCell(
-                    board[position.row][position.col],
-                    positionKeySetHas(legalPositionKeys, position),
-                    positionKeySetHas(highlightedPositionKeys, position),
-                    false,
-                ),
-            );
-            lines.push(`${row[0].row + 1} ${cells.join(" ")}`);
-        }
-
-        return lines.join("\n");
-    }
 
     const lines = [
         "     a   b   c   d   e   f   g   h",
@@ -158,7 +116,6 @@ function screen(
         renderBoard(game.board, {
             legalPositions,
             highlightedPositions,
-            graphical: true,
         }),
         "",
         `Turn: ${actorName(game.current)}`,
@@ -177,7 +134,7 @@ export function renderGame(
 }
 
 export function renderFinalBoard(game: GameState): string {
-    return renderBoard(game.board, { graphical: true });
+    return renderBoard(game.board);
 }
 
 export function renderGameResult(game: GameState): void {
