@@ -81,7 +81,7 @@ h1 {
 
 .board {
     display: grid;
-    grid-template-columns: repeat(8, minmax(42px, 1fr));
+    grid-template: repeat(8, 1fr) / repeat(8, 1fr);
     width: min(100%, 640px);
     aspect-ratio: 1;
     border: 3px solid #193d27;
@@ -104,7 +104,7 @@ h1 {
 
 .square.legal::after {
     width: 18%;
-    height: 18%;
+    aspect-ratio: 1;
     border-radius: 999px;
     background: #e9d75f;
     content: "";
@@ -112,7 +112,7 @@ h1 {
 
 .disc {
     width: 78%;
-    height: 78%;
+    aspect-ratio: 1;
     border-radius: 999px;
     box-shadow:
         inset 0 2px 4px rgb(255 255 255 / 28%),
