@@ -10,7 +10,8 @@
     - `lib/app.ts`: CLI application orchestration and terminal I/O wiring.
     - `lib/game.ts`: Reversi rules and board representation.
     - `lib/cpu.ts`: CPU square selection and scoring.
-    - `lib/ui.ts`: UI-specific rendering, formatting, and input parsing. Keep terminal-specific code under a `Terminal UI` section.
+    - `lib/ui.ts`: Reversi UI rendering, messages, and input parsing.
+    - `lib/terminal.ts`: reusable terminal output, screen, and ANSI styling helpers.
 
 ## Commands
 

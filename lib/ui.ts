@@ -1,5 +1,3 @@
-import { stdout as output } from "node:process";
-import { clearScreenDown, cursorTo } from "node:readline";
 import {
     type Cell,
     countDiscsByPlayer,
@@ -10,6 +8,7 @@ import {
     type Player,
     type Position,
 } from "./game.ts";
+import { blink, clearScreen, colorize, writeTerminal } from "./terminal.ts";
 
 //
 // Terminal UI
@@ -24,14 +23,6 @@ type RenderBoardOptions = {
     highlightedPositions?: Position[];
     graphical?: boolean;
 };
-
-function colorize(text: string, color: string): string {
-    return output.isTTY ? `\x1b[${color}m${text}\x1b[0m` : text;
-}
-
-function blink(text: string): string {
-    return output.isTTY ? `\x1b[5m${text}\x1b[0m` : text;
-}
 
 function playerName(player: Player): string {
     return player === "B" ? "Black (●)" : "White (○)";
@@ -130,7 +121,6 @@ function screen(
     message?: string,
     highlightedPositions: Position[] = [],
 ): string {
-    const counts = countDiscsByPlayer(game.board);
     const legalPositions = legalDiscPlacements(game.board, game.current);
 
     return [
@@ -147,20 +137,13 @@ function screen(
     ].join("\n");
 }
 
-export function clearScreen(): void {
-    if (output.isTTY) {
-        cursorTo(output, 0, 0);
-        clearScreenDown(output);
-    }
-}
-
 export function renderGame(
     game: GameState,
     message?: string,
     highlightedPositions: Position[] = [],
 ): void {
     clearScreen();
-    output.write(`${screen(game, message, highlightedPositions)}\n`);
+    writeTerminal(`${screen(game, message, highlightedPositions)}\n`);
 }
 
 export function renderFinalBoard(game: GameState): string {
@@ -174,15 +157,11 @@ export function renderGameResult(game: GameState): void {
     const counts = countDiscsByPlayer(game.board);
     const result = winner(game.board);
     console.log(`Final score: ● ${counts.B} - ○ ${counts.W}`);
-    console.log(result === "draw" ? "Draw." : `${playerLabel(result)} wins.`);
+    console.log(result === "draw" ? "Draw." : `${playerName(result)} wins.`);
 }
 
 export function squarePrompt(): string {
     return `\n${colorize("Enter d3 or 3 4. q to quit.", "90")}\nSquare> `;
-}
-
-export function playerLabel(player: Player): string {
-    return playerName(player);
 }
 
 export function placementMessage(
@@ -192,11 +171,11 @@ export function placementMessage(
     flippedCount: number,
 ): string {
     if (nextGame.current === previousGame.current) {
-        const skipped = playerLabel(previousGame.current === "B" ? "W" : "B");
-        return `${skipped} has no legal squares. ${playerLabel(previousGame.current)} places again.`;
+        const skipped = playerName(previousGame.current === "B" ? "W" : "B");
+        return `${skipped} has no legal squares. ${playerName(previousGame.current)} places again.`;
     }
 
-    return `${playerLabel(previousGame.current)} placed at ${formatBoardPosition(position)} and flipped ${flippedCount}.`;
+    return `${playerName(previousGame.current)} placed at ${formatBoardPosition(position)} and flipped ${flippedCount}.`;
 }
 
 export function parseBoardPosition(input: string): Position | null {

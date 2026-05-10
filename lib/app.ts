@@ -9,8 +9,8 @@ import {
     type GameState,
     type Player,
 } from "./game.ts";
+import { clearScreen } from "./terminal.ts";
 import {
-    clearScreen,
     formatBoardPosition,
     isQuitInput,
     parseBoardPosition,
