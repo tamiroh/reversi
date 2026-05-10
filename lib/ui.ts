@@ -5,6 +5,7 @@ import {
     countDiscsByPlayer,
     legalDiscPlacements,
     positionKey,
+    winner,
     type GameState,
     type Player,
     type Position,
@@ -166,12 +167,36 @@ export function renderFinalBoard(game: GameState): string {
     return renderBoard(game.board, { graphical: true });
 }
 
+export function renderGameResult(game: GameState): void {
+    clearScreen();
+
+    console.log(renderFinalBoard(game));
+    const counts = countDiscsByPlayer(game.board);
+    const result = winner(game.board);
+    console.log(`Final score: ● ${counts.B} - ○ ${counts.W}`);
+    console.log(result === "draw" ? "Draw." : `${playerLabel(result)} wins.`);
+}
+
 export function squarePrompt(): string {
     return `\n${colorize("Enter d3 or 3 4. q to quit.", "90")}\nSquare> `;
 }
 
 export function playerLabel(player: Player): string {
     return playerName(player);
+}
+
+export function placementMessage(
+    previousGame: GameState,
+    nextGame: GameState,
+    position: Position,
+    flippedCount: number,
+): string {
+    if (nextGame.current === previousGame.current) {
+        const skipped = playerLabel(previousGame.current === "B" ? "W" : "B");
+        return `${skipped} has no legal squares. ${playerLabel(previousGame.current)} places again.`;
+    }
+
+    return `${playerLabel(previousGame.current)} placed at ${formatBoardPosition(position)} and flipped ${flippedCount}.`;
 }
 
 export function parseBoardPosition(input: string): Position | null {
@@ -193,6 +218,11 @@ export function parseBoardPosition(input: string): Position | null {
     }
 
     return null;
+}
+
+export function isQuitInput(input: string): boolean {
+    const text = input.trim().toLowerCase();
+    return text === "q" || text === "quit" || text === "exit";
 }
 
 export function formatBoardPosition(position: Position): string {

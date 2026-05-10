@@ -4,21 +4,19 @@ import { setTimeout as delay } from "node:timers/promises";
 import { chooseCpuPlacement } from "./cpu.ts";
 import {
     placeDisc,
-    countDiscsByPlayer,
     createInitialGame,
     isGameOver,
-    winner,
     type GameState,
     type Player,
-    type Position,
 } from "./game.ts";
 import {
     clearScreen,
     formatBoardPosition,
+    isQuitInput,
     parseBoardPosition,
-    playerLabel,
-    renderFinalBoard,
+    placementMessage,
     renderGame,
+    renderGameResult,
     squarePrompt,
 } from "./ui.ts";
 
@@ -73,12 +71,22 @@ async function playCpuTurn(state: AppState): Promise<TurnResult> {
         );
     }
 
-    return resolvePlacement(
+    const message = placementMessage(
         state.game,
         result.game,
         cpuPlacement.position,
-        result.flipped,
+        result.flipped.length,
     );
+    renderGame(result.game, message, [
+        cpuPlacement.position,
+        ...result.flipped,
+    ]);
+    await delay(PLACEMENT_HIGHLIGHT_DELAY_MS);
+
+    return {
+        quit: false,
+        state: { game: result.game, message },
+    };
 }
 
 async function playHumanTurn(
@@ -88,9 +96,8 @@ async function playHumanTurn(
     renderGame(state.game, state.message);
 
     const answer = await rl.question(squarePrompt());
-    const trimmed = answer.trim().toLowerCase();
 
-    if (trimmed === "q" || trimmed === "quit" || trimmed === "exit") {
+    if (isQuitInput(answer)) {
         clearScreen();
         console.log("Bye.");
         return { quit: true };
@@ -115,47 +122,17 @@ async function playHumanTurn(
         };
     }
 
-    return resolvePlacement(state.game, result.game, position, result.flipped);
-}
-
-async function resolvePlacement(
-    previousGame: GameState,
-    nextGame: GameState,
-    position: Position,
-    flipped: Position[],
-): Promise<TurnResult> {
     const message = placementMessage(
-        previousGame,
-        nextGame,
+        state.game,
+        result.game,
         position,
-        flipped.length,
+        result.flipped.length,
     );
-    renderGame(nextGame, message, [position, ...flipped]);
+    renderGame(result.game, message, [position, ...result.flipped]);
     await delay(PLACEMENT_HIGHLIGHT_DELAY_MS);
 
-    return { quit: false, state: { game: nextGame, message } };
-}
-
-function placementMessage(
-    previousGame: GameState,
-    nextGame: GameState,
-    position: Position,
-    flippedCount: number,
-): string {
-    if (nextGame.current === previousGame.current) {
-        const skipped = previousGame.current === "B" ? "White" : "Black";
-        return `${skipped} has no legal squares. ${playerLabel(previousGame.current)} places again.`;
-    }
-
-    return `${playerLabel(previousGame.current)} placed at ${formatBoardPosition(position)} and flipped ${flippedCount}.`;
-}
-
-function renderGameResult(game: GameState): void {
-    clearScreen();
-
-    console.log(renderFinalBoard(game));
-    const counts = countDiscsByPlayer(game.board);
-    const result = winner(game.board);
-    console.log(`Final score: ● ${counts.B} - ○ ${counts.W}`);
-    console.log(result === "draw" ? "Draw." : `${playerLabel(result)} wins.`);
+    return {
+        quit: false,
+        state: { game: result.game, message },
+    };
 }
