@@ -7,11 +7,14 @@
 - The app is intentionally small. Prefer a few clear modules over premature splitting.
 - Current module boundaries:
     - `bin/reversi.ts`: thin executable entrypoint.
+    - `bin/reversi-gui.ts`: thin Electron entrypoint.
+    - `gui/`: Electron renderer HTML, CSS, and browser-side TypeScript, including GUI rendering.
     - `lib/app.ts`: CLI application orchestration and terminal I/O wiring.
+    - `lib/electron-app.ts`: Electron main-process window orchestration.
     - `lib/game.ts`: Reversi rules and board representation.
     - `lib/player-roles.ts`: app-level player role assignment, such as human vs CPU.
     - `lib/cpu.ts`: CPU square selection and scoring.
-    - `lib/ui.ts`: Reversi UI rendering, messages, and input parsing.
+    - `lib/ui.ts`: shared UI labels, messages, input parsing, and terminal-specific Reversi rendering.
     - `lib/terminal.ts`: reusable terminal output, screen, and ANSI styling helpers.
     - `lib/type-utils.ts`: reusable TypeScript type utilities.
 

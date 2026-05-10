@@ -19,7 +19,7 @@ import { CPU_PLAYER, HUMAN_PLAYER } from "./player-roles.ts";
 import { blink, clearScreen, colorize, writeTerminal } from "./terminal.ts";
 
 //
-// Terminal UI
+// Shared UI
 //
 
 const PLAYER_MARKS: Record<Player, string> = {
@@ -32,18 +32,22 @@ const PLAYER_NAMES: Record<Player, string> = {
     [WHITE_PLAYER]: "White",
 };
 
+export function playerMark(player: Player): string {
+    return PLAYER_MARKS[player];
+}
+
+export function playerName(player: Player): string {
+    return `${PLAYER_NAMES[player]} (${playerMark(player)})`;
+}
+
+//
+// Terminal UI
+//
+
 type RenderBoardOptions = {
     legalPositions?: Position[];
     highlightedPositions?: Position[];
 };
-
-function playerMark(player: Player): string {
-    return PLAYER_MARKS[player];
-}
-
-function playerName(player: Player): string {
-    return `${PLAYER_NAMES[player]} (${playerMark(player)})`;
-}
 
 function actorName(player: Player): string {
     if (player === HUMAN_PLAYER) return `You (${playerMark(player)})`;
@@ -152,6 +156,10 @@ export function renderGameResult(game: GameState): void {
 export function squarePrompt(): string {
     return `\n${colorize("Enter d3 or 3 4. q to quit.", "90")}\nSquare> `;
 }
+
+//
+// Input
+//
 
 export function placementMessage(
     previousGame: GameState,

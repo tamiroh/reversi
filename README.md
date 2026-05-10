@@ -1,6 +1,8 @@
-# reversi
+# Reversi
 
-A small single-player Reversi/Othello game for the terminal, written in TypeScript.
+A small single-player Reversi/Othello game written in TypeScript.
+
+It supports both a terminal UI and an Electron GUI.
 
 ## Setup
 
@@ -8,7 +10,7 @@ A small single-player Reversi/Othello game for the terminal, written in TypeScri
 npm install
 ```
 
-## Play
+## Play in the Terminal
 
 ```sh
 npm run build
@@ -20,8 +22,16 @@ Legal squares are shown as `+`.
 
 You play black (`●`) and go first. The CPU plays white (`○`).
 
+## Play in the GUI
+
+```sh
+npm run gui
+```
+
+The GUI uses Electron. You play black and click highlighted squares to place discs.
+
 ## Test
 
 ```sh
-npm test
+npm run ci
 ```
