@@ -45,23 +45,25 @@ const BOARD_INDEXES = Array.from(
     },
 );
 
-function createBoard(rows: Cell[][]): Board {
+function createBoardGrid<Item>(rows: Item[][]): BoardGrid<Item> {
     if (
         rows.length !== BOARD_SIZE ||
         rows.some((row) => row.length !== BOARD_SIZE)
     ) {
-        throw new Error("Board must be 8x8.");
+        throw new Error("Board grid must be 8x8.");
     }
 
-    return rows as Board;
+    return rows as BoardGrid<Item>;
 }
 
 function createEmptyBoard(): Board {
-    return createBoard(BOARD_INDEXES.map(() => BOARD_INDEXES.map(() => EMPTY)));
+    return createBoardGrid(
+        BOARD_INDEXES.map(() => BOARD_INDEXES.map(() => EMPTY)),
+    );
 }
 
 export function cloneBoard(board: Board): Board {
-    return createBoard(board.map((row) => [...row]));
+    return createBoardGrid(board.map((row) => [...row]));
 }
 
 export function countDiscsByPlayer(board: Board): Record<Player, number> {
@@ -105,6 +107,12 @@ export function positionKey(position: Position): string {
 
 export function isInside(row: number, col: number): boolean {
     return positionAt(row, col) !== null;
+}
+
+export function boardPositions(): BoardGrid<Position> {
+    return createBoardGrid(
+        BOARD_INDEXES.map((row) => BOARD_INDEXES.map((col) => ({ row, col }))),
+    );
 }
 
 //
@@ -187,13 +195,13 @@ export function discPositionsFlippedByPlacement(
 export function legalDiscPlacements(board: Board, player: Player): Position[] {
     const positions: Position[] = [];
 
-    for (const row of BOARD_INDEXES) {
-        for (const col of BOARD_INDEXES) {
+    for (const row of boardPositions()) {
+        for (const position of row) {
             if (
-                discPositionsFlippedByPlacement(board, player, { row, col })
+                discPositionsFlippedByPlacement(board, player, position)
                     .length > 0
             ) {
-                positions.push({ row, col });
+                positions.push(position);
             }
         }
     }

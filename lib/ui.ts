@@ -1,6 +1,7 @@
 import {
     type Board,
     type Cell,
+    boardPositions,
     countDiscsByPlayer,
     legalDiscPlacements,
     positionAt,
@@ -64,11 +65,9 @@ function renderLargeCell(
 
 function positionKeySetHas(
     positionKeys: Set<string>,
-    row: number,
-    col: number,
+    position: Position,
 ): boolean {
-    const position = positionAt(row, col);
-    return position !== null && positionKeys.has(positionKey(position));
+    return positionKeys.has(positionKey(position));
 }
 
 function renderBoard(
@@ -88,16 +87,16 @@ function renderBoard(
     if (!graphical) {
         const lines = ["  a b c d e f g h"];
 
-        for (let row = 0; row < board.length; row += 1) {
-            const cells = board[row].map((cell, col) =>
+        for (const row of boardPositions()) {
+            const cells = row.map((position) =>
                 renderCell(
-                    cell,
-                    positionKeySetHas(legalPositionKeys, row, col),
-                    positionKeySetHas(highlightedPositionKeys, row, col),
+                    board[position.row][position.col],
+                    positionKeySetHas(legalPositionKeys, position),
+                    positionKeySetHas(highlightedPositionKeys, position),
                     false,
                 ),
             );
-            lines.push(`${row + 1} ${cells.join(" ")}`);
+            lines.push(`${row[0].row + 1} ${cells.join(" ")}`);
         }
 
         return lines.join("\n");
@@ -108,17 +107,17 @@ function renderBoard(
         "  ┌───┬───┬───┬───┬───┬───┬───┬───┐",
     ];
 
-    for (let row = 0; row < board.length; row += 1) {
-        const cells = board[row].map((cell, col) =>
+    for (const row of boardPositions()) {
+        const cells = row.map((position) =>
             renderLargeCell(
-                cell,
-                positionKeySetHas(legalPositionKeys, row, col),
-                positionKeySetHas(highlightedPositionKeys, row, col),
+                board[position.row][position.col],
+                positionKeySetHas(legalPositionKeys, position),
+                positionKeySetHas(highlightedPositionKeys, position),
             ),
         );
-        lines.push(`${row + 1} │${cells.join("│")}│`);
+        lines.push(`${row[0].row + 1} │${cells.join("│")}│`);
 
-        if (row < board.length - 1) {
+        if (row[0].row < board.length - 1) {
             lines.push("  ├───┼───┼───┼───┼───┼───┼───┼───┤");
         }
     }
