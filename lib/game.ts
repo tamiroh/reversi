@@ -90,15 +90,15 @@ export type DiscPlacementResult =
     | { ok: true; game: GameState; flipped: Position[] }
     | { ok: false; reason: string };
 
-const DIRECTIONS: Position[] = [
-    { row: -1, col: -1 },
-    { row: -1, col: 0 },
-    { row: -1, col: 1 },
-    { row: 0, col: -1 },
-    { row: 0, col: 1 },
-    { row: 1, col: -1 },
-    { row: 1, col: 0 },
-    { row: 1, col: 1 },
+const DIRECTIONS = [
+    { rowOffset: -1, colOffset: -1 },
+    { rowOffset: -1, colOffset: 0 },
+    { rowOffset: -1, colOffset: 1 },
+    { rowOffset: 0, colOffset: -1 },
+    { rowOffset: 0, colOffset: 1 },
+    { rowOffset: 1, colOffset: -1 },
+    { rowOffset: 1, colOffset: 0 },
+    { rowOffset: 1, colOffset: 1 },
 ];
 
 export function discPositionsFlippedByPlacement(
@@ -118,13 +118,13 @@ export function discPositionsFlippedByPlacement(
 
     for (const direction of DIRECTIONS) {
         const line: Position[] = [];
-        let row = position.row + direction.row;
-        let col = position.col + direction.col;
+        let row = position.row + direction.rowOffset;
+        let col = position.col + direction.colOffset;
 
         while (isInside(row, col) && board[row][col] === other) {
             line.push({ row, col });
-            row += direction.row;
-            col += direction.col;
+            row += direction.rowOffset;
+            col += direction.colOffset;
         }
 
         if (
