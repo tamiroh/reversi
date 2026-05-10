@@ -24,20 +24,39 @@ import { blink, clearScreen, colorize, writeTerminal } from "./terminal.ts";
 const HUMAN_PLAYER: Player = BLACK_PLAYER;
 const CPU_PLAYER: Player = WHITE_PLAYER;
 
+const PLAYER_MARKS: Record<Player, string> = {
+    [BLACK_PLAYER]: "●",
+    [WHITE_PLAYER]: "○",
+};
+
+const PLAYER_NAMES: Record<Player, string> = {
+    [BLACK_PLAYER]: "Black",
+    [WHITE_PLAYER]: "White",
+};
+
 type RenderBoardOptions = {
     legalPositions?: Position[];
     highlightedPositions?: Position[];
     graphical?: boolean;
 };
 
+function playerMark(player: Player): string {
+    return PLAYER_MARKS[player];
+}
+
 function playerName(player: Player): string {
-    return player === BLACK_PLAYER ? "Black (●)" : "White (○)";
+    return `${PLAYER_NAMES[player]} (${playerMark(player)})`;
 }
 
 function actorName(player: Player): string {
-    if (player === HUMAN_PLAYER) return "You (●)";
-    if (player === CPU_PLAYER) return "CPU (○)";
+    if (player === HUMAN_PLAYER) return `You (${playerMark(player)})`;
+    if (player === CPU_PLAYER) return `CPU (${playerMark(player)})`;
     return playerName(player);
+}
+
+function renderPlayerMark(player: Player, isHighlighted: boolean): string {
+    const mark = playerMark(player);
+    return isHighlighted ? colorize(mark, "93") : mark;
 }
 
 function renderCell(
@@ -52,8 +71,7 @@ function renderCell(
         return isLegalPosition ? blink("*") : EMPTY_CELL;
     }
 
-    if (cell === BLACK_PLAYER) return isHighlighted ? colorize("●", "93") : "●";
-    if (cell === WHITE_PLAYER) return isHighlighted ? colorize("○", "93") : "○";
+    if (cell !== EMPTY_CELL) return renderPlayerMark(cell, isHighlighted);
     return isLegalPosition ? blink("+") : "·";
 }
 
@@ -62,10 +80,8 @@ function renderLargeCell(
     isLegalPosition: boolean,
     isHighlighted: boolean,
 ): string {
-    if (cell === BLACK_PLAYER)
-        return ` ${isHighlighted ? colorize("●", "93") : "●"} `;
-    if (cell === WHITE_PLAYER)
-        return ` ${isHighlighted ? colorize("○", "93") : "○"} `;
+    if (cell !== EMPTY_CELL)
+        return ` ${renderPlayerMark(cell, isHighlighted)} `;
     return isLegalPosition ? ` ${blink("+")} ` : "   ";
 }
 
@@ -172,7 +188,9 @@ export function renderGameResult(game: GameState): void {
     console.log(renderFinalBoard(game));
     const counts = countDiscsByPlayer(game.board);
     const result = winner(game.board);
-    console.log(`Final score: ● ${counts.B} - ○ ${counts.W}`);
+    console.log(
+        `Final score: ${playerMark(BLACK_PLAYER)} ${counts[BLACK_PLAYER]} - ${playerMark(WHITE_PLAYER)} ${counts[WHITE_PLAYER]}`,
+    );
     console.log(result === "draw" ? "Draw." : `${playerName(result)} wins.`);
 }
 
