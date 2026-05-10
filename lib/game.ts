@@ -133,10 +133,6 @@ export function positionKey(position: Position): string {
     return `${position.row},${position.col}`;
 }
 
-export function isInside(row: number, col: number): boolean {
-    return positionAt(row, col) !== null;
-}
-
 export function boardPositions(): BoardGrid<Position> {
     return createBoardGrid(
         BOARD_INDEXES.map((row) => BOARD_INDEXES.map((col) => ({ row, col }))),
@@ -187,10 +183,7 @@ export function discPositionsFlippedByPlacement(
     player: Player,
     position: Position,
 ): Position[] {
-    if (
-        !isInside(position.row, position.col) ||
-        board[position.row][position.col] !== EMPTY_CELL
-    ) {
+    if (board[position.row][position.col] !== EMPTY_CELL) {
         return [];
     }
 
