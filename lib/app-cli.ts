@@ -15,10 +15,8 @@ import {
     isQuitInput,
     parseBoardPosition,
     placementMessage,
-    renderGame,
-    renderGameResult,
-    squarePrompt,
-} from "./ui.ts";
+} from "./ui-shared.ts";
+import { renderGame, renderGameResult, squarePrompt } from "./ui-terminal.ts";
 
 const CPU_THINKING_DELAY_MS = 700;
 const PLACEMENT_HIGHLIGHT_DELAY_MS = 700;

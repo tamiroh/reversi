@@ -6,7 +6,7 @@ import {
     isQuitInput,
     parseBoardPosition,
     placementMessage,
-} from "./ui.ts";
+} from "./ui-shared.ts";
 
 //
 // Board Position Input

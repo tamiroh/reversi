@@ -14,7 +14,9 @@
     - `lib/game.ts`: Reversi rules and board representation.
     - `lib/player-roles.ts`: app-level player role assignment, such as human vs CPU.
     - `lib/cpu.ts`: CPU square selection and scoring.
-    - `lib/ui.ts`: shared UI labels, messages, input parsing, and terminal-specific Reversi rendering.
+    - `lib/ui-shared.ts`: UI labels, messages, and input parsing shared by interfaces.
+    - `lib/ui-terminal.ts`: terminal-specific Reversi rendering and prompts.
+    - `lib/ui-gui.ts`: GUI-specific Reversi rendering and browser DOM updates.
     - `lib/terminal.ts`: reusable terminal output, screen, and ANSI styling helpers.
     - `lib/type-utils.ts`: reusable TypeScript type utilities.
 
