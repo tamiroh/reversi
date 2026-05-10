@@ -25,10 +25,11 @@ export function opponent(player: Player): Player {
 // Board
 //
 
-export type Cell = Player | ".";
+export const EMPTY_CELL = ".";
+
+export type Cell = Player | typeof EMPTY_CELL;
 
 const BOARD_SIZE = 8;
-const EMPTY: Cell = ".";
 
 export type BoardIndex = IntegerRangeFromZero<typeof BOARD_SIZE>;
 export type BoardGrid<Item> = FixedLengthArray<
@@ -65,7 +66,7 @@ function createBoardGrid<Item>(rows: Item[][]): BoardGrid<Item> {
 }
 
 function isCell(value: unknown): value is Cell {
-    return isPlayer(value) || value === EMPTY;
+    return isPlayer(value) || value === EMPTY_CELL;
 }
 
 function isCellRows(rows: unknown[][]): rows is Cell[][] {
@@ -81,7 +82,9 @@ function createBoard(rows: unknown[][]): Board {
 }
 
 function createEmptyBoard(): Board {
-    return createBoard(BOARD_INDEXES.map(() => BOARD_INDEXES.map(() => EMPTY)));
+    return createBoard(
+        BOARD_INDEXES.map(() => BOARD_INDEXES.map(() => EMPTY_CELL)),
+    );
 }
 
 export function cloneBoard(board: Board): Board {
@@ -186,7 +189,7 @@ export function discPositionsFlippedByPlacement(
 ): Position[] {
     if (
         !isInside(position.row, position.col) ||
-        board[position.row][position.col] !== EMPTY
+        board[position.row][position.col] !== EMPTY_CELL
     ) {
         return [];
     }

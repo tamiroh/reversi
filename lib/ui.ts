@@ -2,6 +2,7 @@ import {
     BLACK_PLAYER,
     type Board,
     type Cell,
+    EMPTY_CELL,
     WHITE_PLAYER,
     boardPositions,
     countDiscsByPlayer,
@@ -22,7 +23,6 @@ import { blink, clearScreen, colorize, writeTerminal } from "./terminal.ts";
 
 const HUMAN_PLAYER: Player = BLACK_PLAYER;
 const CPU_PLAYER: Player = WHITE_PLAYER;
-const EMPTY: Cell = ".";
 
 type RenderBoardOptions = {
     legalPositions?: Position[];
@@ -47,8 +47,9 @@ function renderCell(
     graphical: boolean,
 ): string {
     if (!graphical) {
-        if (cell !== EMPTY) return isHighlighted ? colorize(cell, "93") : cell;
-        return isLegalPosition ? blink("*") : ".";
+        if (cell !== EMPTY_CELL)
+            return isHighlighted ? colorize(cell, "93") : cell;
+        return isLegalPosition ? blink("*") : EMPTY_CELL;
     }
 
     if (cell === BLACK_PLAYER) return isHighlighted ? colorize("●", "93") : "●";
