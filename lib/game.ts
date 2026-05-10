@@ -1,69 +1,21 @@
 //
-// Types
+// Players
 //
 
 export type Player = "B" | "W";
-export type Cell = Player | ".";
-
-export type Position = {
-    row: number;
-    col: number;
-};
-
-export type DiscPlacementResult =
-    | { ok: true; game: GameState; flipped: Position[] }
-    | { ok: false; reason: string };
-
-export type GameState = {
-    board: Cell[][];
-    current: Player;
-};
-
-//
-// Constants
-//
-
-const BOARD_SIZE = 8;
-const EMPTY: Cell = ".";
-const DIRECTIONS: Position[] = [
-    { row: -1, col: -1 },
-    { row: -1, col: 0 },
-    { row: -1, col: 1 },
-    { row: 0, col: -1 },
-    { row: 0, col: 1 },
-    { row: 1, col: -1 },
-    { row: 1, col: 0 },
-    { row: 1, col: 1 },
-];
-
-//
-// Game Setup
-//
-
-export function createInitialGame(): GameState {
-    const board = Array.from({ length: BOARD_SIZE }, () =>
-        Array.from<Cell>({ length: BOARD_SIZE }).fill(EMPTY),
-    );
-
-    board[3][3] = "W";
-    board[3][4] = "B";
-    board[4][3] = "B";
-    board[4][4] = "W";
-
-    return { board, current: "B" };
-}
-
-//
-// Player Helpers
-//
 
 export function opponent(player: Player): Player {
     return player === "B" ? "W" : "B";
 }
 
 //
-// Position Helpers
+// Positions
 //
+
+export type Position = {
+    row: number;
+    col: number;
+};
 
 export function positionsEqual(left: Position, right: Position): boolean {
     return left.row === right.row && left.col === right.col;
@@ -74,8 +26,13 @@ export function positionKey(position: Position): string {
 }
 
 //
-// Board Helpers
+// Board
 //
+
+export type Cell = Player | ".";
+
+const BOARD_SIZE = 8;
+const EMPTY: Cell = ".";
 
 export function boardSize(): number {
     return BOARD_SIZE;
@@ -104,8 +61,45 @@ export function countDiscsByPlayer(board: Cell[][]): Record<Player, number> {
 }
 
 //
-// Placement Rules
+// Game State
 //
+
+export type GameState = {
+    board: Cell[][];
+    current: Player;
+};
+
+export function createInitialGame(): GameState {
+    const board = Array.from({ length: BOARD_SIZE }, () =>
+        Array.from<Cell>({ length: BOARD_SIZE }).fill(EMPTY),
+    );
+
+    board[3][3] = "W";
+    board[3][4] = "B";
+    board[4][3] = "B";
+    board[4][4] = "W";
+
+    return { board, current: "B" };
+}
+
+//
+// Disc Placement
+//
+
+export type DiscPlacementResult =
+    | { ok: true; game: GameState; flipped: Position[] }
+    | { ok: false; reason: string };
+
+const DIRECTIONS: Position[] = [
+    { row: -1, col: -1 },
+    { row: -1, col: 0 },
+    { row: -1, col: 1 },
+    { row: 0, col: -1 },
+    { row: 0, col: 1 },
+    { row: 1, col: -1 },
+    { row: 1, col: 0 },
+    { row: 1, col: 1 },
+];
 
 export function discPositionsFlippedByPlacement(
     board: Cell[][],
@@ -164,10 +158,6 @@ export function legalDiscPlacements(
 
     return positions;
 }
-
-//
-// Game Flow
-//
 
 export function placeDisc(
     game: GameState,
