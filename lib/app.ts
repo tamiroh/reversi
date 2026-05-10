@@ -60,13 +60,15 @@ async function playCpuTurn(state: AppState): Promise<TurnResult> {
 
     const cpuPosition = chooseCpuPlacement(state.game);
     if (!cpuPosition) {
-        throw new Error("CPU has no legal squares on its turn.");
+        throw new Error(
+            "Unexpected CPU turn without a legal square before game over.",
+        );
     }
 
     const result = placeDisc(state.game, cpuPosition);
     if (!result.ok) {
         throw new Error(
-            `CPU selected an illegal square: ${formatBoardPosition(cpuPosition)}`,
+            `Unexpected illegal CPU square after selection: ${formatBoardPosition(cpuPosition)}.`,
         );
     }
 
