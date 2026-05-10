@@ -68,12 +68,16 @@ function isCell(value: unknown): value is Cell {
     return isPlayer(value) || value === EMPTY;
 }
 
+function isCellRows(rows: unknown[][]): rows is Cell[][] {
+    return rows.every((row) => row.every(isCell));
+}
+
 function createBoard(rows: unknown[][]): Board {
-    if (rows.some((row) => row.some((cell) => !isCell(cell)))) {
+    if (!isCellRows(rows)) {
         throw new Error("Board contains an invalid cell.");
     }
 
-    return createBoardGrid(rows) as Board;
+    return createBoardGrid(rows);
 }
 
 function createEmptyBoard(): Board {
