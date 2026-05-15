@@ -2,6 +2,7 @@
     "name": "reversi-cli",
     "version": "0.1.0",
     "private": true,
+    "packageManager": "pnpm@11.1.2",
     "type": "module",
     "bin": {
         "reversi-cli": "./dist/bin/cli.js",
@@ -9,14 +10,14 @@
     },
     "scripts": {
         "build": "node scripts/clean-dist.mjs && tsc && node scripts/copy-gui-assets.mjs",
-        "start": "npm run cli",
-        "cli": "npm run build && node dist/bin/cli.js",
+        "start": "pnpm run cli",
+        "cli": "pnpm run build && node dist/bin/cli.js",
         "dev": "node bin/cli.ts",
-        "gui": "npm run build && env -u ELECTRON_RUN_AS_NODE electron dist/bin/gui.js",
+        "gui": "pnpm run build && env -u ELECTRON_RUN_AS_NODE electron dist/bin/gui.js",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "test": "node --test dist/**/*.test.js",
-        "ci": "npm run format:check && npm run build && npm test"
+        "ci": "pnpm run format:check && pnpm run build && pnpm test"
     },
     "devDependencies": {
         "@types/node": "^24.0.0",

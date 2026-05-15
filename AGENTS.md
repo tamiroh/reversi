@@ -22,20 +22,20 @@
 
 ## Commands
 
-- `npm run dev`: run the CLI directly from TypeScript with Node.
-- `npm run build`: compile TypeScript into `dist`.
-- `npm test`: run compiled tests from `dist`.
-- `npm run format`: apply Prettier.
-- `npm run format:check`: check Prettier formatting.
-- `npm run ci`: format check, build, and test.
+- `pnpm run dev`: run the CLI directly from TypeScript with Node.
+- `pnpm run build`: compile TypeScript into `dist`.
+- `pnpm test`: run compiled tests from `dist`.
+- `pnpm run format`: apply Prettier.
+- `pnpm run format:check`: check Prettier formatting.
+- `pnpm run ci`: format check, build, and test.
 
-After editing files, run `npm run format` before verification. Treat it like an agent-side formatting hook.
+After editing files, run `pnpm run format` before verification. Treat it like an agent-side formatting hook.
 
 ## Formatting
 
 - Follow `.editorconfig`: 4-space indentation.
 - Prettier is part of CI.
-- `package-lock.json` is intentionally excluded from Prettier via `.prettierignore`.
+- `pnpm-lock.yaml` is intentionally excluded from Prettier via `.prettierignore`.
 
 ## Naming
 
@@ -72,4 +72,4 @@ Keep related functions in the matching section. Reorder within a file when it im
 ## Testing
 
 - Add focused tests when changing game rules or CPU scoring.
-- After code changes, run `npm run ci` unless the user explicitly says they will handle verification.
+- After code changes, run `pnpm run ci` unless the user explicitly says they will handle verification.

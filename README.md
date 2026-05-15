@@ -7,13 +7,13 @@ It supports both a terminal UI and an Electron GUI.
 ## Setup
 
 ```sh
-npm install
+pnpm install
 ```
 
 ## Play in the Terminal
 
 ```sh
-npm run cli
+pnpm run cli
 ```
 
 Enter a square using board coordinates like `d3`, or row and column numbers like `3 4`.
@@ -24,7 +24,7 @@ You play black (`●`) and go first. The CPU plays white (`○`).
 ## Play in the GUI
 
 ```sh
-npm run gui
+pnpm run gui
 ```
 
 The GUI uses Electron. You play black and click highlighted squares to place discs.
@@ -32,5 +32,5 @@ The GUI uses Electron. You play black and click highlighted squares to place dis
 ## Test
 
 ```sh
-npm run ci
+pnpm run ci
 ```
