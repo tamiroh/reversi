@@ -2,23 +2,25 @@
 
 ## Project Shape
 
-- This is a TypeScript Node.js CLI Reversi game.
+- This is a pnpm workspace containing a TypeScript Node.js CLI Reversi game.
 - Runtime target is modern Node.js 24.
 - The app is intentionally small. Prefer a few clear modules over premature splitting.
+- Current packages:
+    - `packages/app`: the current CLI and Electron GUI application.
 - Current module boundaries:
-    - `bin/cli.ts`: thin CLI executable entrypoint.
-    - `bin/gui.ts`: thin GUI executable entrypoint.
-    - `gui/`: Electron renderer HTML, CSS, and browser-side TypeScript, including GUI rendering.
-    - `lib/app-cli.ts`: CLI application orchestration and terminal I/O wiring.
-    - `lib/app-gui.ts`: Electron main-process window orchestration.
-    - `lib/game.ts`: Reversi rules and board representation.
-    - `lib/player-roles.ts`: app-level player role assignment, such as human vs CPU.
-    - `lib/cpu.ts`: CPU square selection and scoring.
-    - `lib/ui-shared.ts`: UI labels, messages, and input parsing shared by interfaces.
-    - `lib/ui-terminal.ts`: terminal-specific Reversi rendering and prompts.
-    - `lib/ui-gui.ts`: GUI-specific Reversi rendering and browser DOM updates.
-    - `lib/terminal.ts`: reusable terminal output, screen, and ANSI styling helpers.
-    - `lib/type-utils.ts`: reusable TypeScript type utilities.
+    - `packages/app/bin/cli.ts`: thin CLI executable entrypoint.
+    - `packages/app/bin/gui.ts`: thin GUI executable entrypoint.
+    - `packages/app/gui/`: Electron renderer HTML, CSS, and browser-side TypeScript, including GUI rendering.
+    - `packages/app/lib/app-cli.ts`: CLI application orchestration and terminal I/O wiring.
+    - `packages/app/lib/app-gui.ts`: Electron main-process window orchestration.
+    - `packages/app/lib/game.ts`: Reversi rules and board representation.
+    - `packages/app/lib/player-roles.ts`: app-level player role assignment, such as human vs CPU.
+    - `packages/app/lib/cpu.ts`: CPU square selection and scoring.
+    - `packages/app/lib/ui-shared.ts`: UI labels, messages, and input parsing shared by interfaces.
+    - `packages/app/lib/ui-terminal.ts`: terminal-specific Reversi rendering and prompts.
+    - `packages/app/lib/ui-gui.ts`: GUI-specific Reversi rendering and browser DOM updates.
+    - `packages/app/lib/terminal.ts`: reusable terminal output, screen, and ANSI styling helpers.
+    - `packages/app/lib/type-utils.ts`: reusable TypeScript type utilities.
 
 ## Commands
 
@@ -60,7 +62,7 @@ Keep related functions in the matching section. Reorder within a file when it im
 
 - Keep board logic in `game.ts` for now. A previous attempt to split `board.ts` made the boundary feel unclear.
 - Keep terminal input simple and keyboard-driven with typed squares such as `d3` or `3 4`.
-- Keep CPU player logic independent in `lib/cpu.ts`; it should depend on public game APIs rather than owning rule logic.
+- Keep CPU player logic independent in `packages/app/lib/cpu.ts`; it should depend on public game APIs rather than owning rule logic.
 
 ## Error Handling
 

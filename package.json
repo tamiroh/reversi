@@ -1,28 +1,20 @@
 {
-    "name": "reversi-cli",
-    "version": "0.1.0",
+    "name": "reversi-workspace",
     "private": true,
     "packageManager": "pnpm@11.1.2",
     "type": "module",
-    "bin": {
-        "reversi-cli": "./dist/bin/cli.js",
-        "reversi-gui": "./dist/bin/gui.js"
-    },
     "scripts": {
-        "build": "node scripts/clean-dist.mjs && tsc && node scripts/copy-gui-assets.mjs",
+        "build": "pnpm --filter @reversi/app run build",
         "start": "pnpm run cli",
-        "cli": "pnpm run build && node dist/bin/cli.js",
-        "dev": "node bin/cli.ts",
-        "gui": "pnpm run build && env -u ELECTRON_RUN_AS_NODE electron dist/bin/gui.js",
+        "cli": "pnpm --filter @reversi/app run cli",
+        "dev": "pnpm --filter @reversi/app run dev",
+        "gui": "pnpm --filter @reversi/app run gui",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
-        "test": "node --test dist/**/*.test.js",
+        "test": "pnpm --filter @reversi/app test",
         "ci": "pnpm run format:check && pnpm run build && pnpm test"
     },
     "devDependencies": {
-        "@types/node": "^24.0.0",
-        "electron": "^42.0.1",
-        "prettier": "3.8.3",
-        "typescript": "^5.8.0"
+        "prettier": "3.8.3"
     }
 }
