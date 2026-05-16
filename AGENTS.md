@@ -8,11 +8,11 @@
 - Current packages:
     - `packages/core`: Reversi rules, CPU selection, shared labels/input parsing, and pure utilities.
     - `packages/cli`: terminal CLI application.
-    - `packages/app`: Electron GUI application.
+    - `packages/gui`: Electron GUI application.
 - Keep package boundaries clear:
     - `packages/core` must stay independent from Node, Electron, terminal, and DOM APIs.
     - `packages/cli` may depend on Node terminal APIs and `@reversi/core`.
-    - `packages/app` may depend on Electron, browser DOM APIs, Vite, and `@reversi/core`.
+    - `packages/gui` may depend on Electron, browser DOM APIs, Vite, and `@reversi/core`.
 
 ## Commands
 

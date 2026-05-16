@@ -8,10 +8,10 @@
         "start": "pnpm run cli",
         "cli": "pnpm --filter @reversi/cli run cli",
         "dev": "pnpm --filter @reversi/cli run dev",
-        "gui": "pnpm --filter @reversi/app run gui",
+        "gui": "pnpm --filter @reversi/gui run gui",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
-        "test": "pnpm --filter @reversi/core test && pnpm --filter @reversi/cli test && pnpm --filter @reversi/app test",
+        "test": "pnpm --filter @reversi/core test && pnpm --filter @reversi/cli test && pnpm --filter @reversi/gui test",
         "ci": "pnpm run format:check && pnpm run build && pnpm test"
     },
     "devDependencies": {

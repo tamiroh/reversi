@@ -12,28 +12,6 @@ importers:
         specifier: 3.8.3
         version: 3.8.3
 
-  packages/app:
-    dependencies:
-      '@reversi/core':
-        specifier: workspace:*
-        version: link:../core
-    devDependencies:
-      '@types/node':
-        specifier: ^24.0.0
-        version: 24.12.4
-      electron:
-        specifier: ^42.0.1
-        version: 42.0.1
-      prettier:
-        specifier: 3.8.3
-        version: 3.8.3
-      typescript:
-        specifier: ^5.8.0
-        version: 5.9.3
-      vite:
-        specifier: ^7.0.0
-        version: 7.3.3(@types/node@24.12.4)
-
   packages/cli:
     dependencies:
       '@reversi/core':
@@ -58,6 +36,28 @@ importers:
       typescript:
         specifier: ^5.8.0
         version: 5.9.3
+
+  packages/gui:
+    dependencies:
+      '@reversi/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.12.4
+      electron:
+        specifier: ^42.0.1
+        version: 42.0.1
+      prettier:
+        specifier: 3.8.3
+        version: 3.8.3
+      typescript:
+        specifier: ^5.8.0
+        version: 5.9.3
+      vite:
+        specifier: ^7.0.0
+        version: 7.3.3(@types/node@24.12.4)
 
 packages:
 
