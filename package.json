@@ -4,14 +4,14 @@
     "packageManager": "pnpm@11.1.2",
     "type": "module",
     "scripts": {
-        "build": "pnpm --filter @reversi/app run build",
+        "build": "pnpm --filter @reversi/core run build && pnpm --filter @reversi/app run build",
         "start": "pnpm run cli",
         "cli": "pnpm --filter @reversi/app run cli",
         "dev": "pnpm --filter @reversi/app run dev",
         "gui": "pnpm --filter @reversi/app run gui",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
-        "test": "pnpm --filter @reversi/app test",
+        "test": "pnpm --filter @reversi/core test && pnpm --filter @reversi/app test",
         "ci": "pnpm run format:check && pnpm run build && pnpm test"
     },
     "devDependencies": {

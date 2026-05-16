@@ -27,6 +27,15 @@ importers:
         specifier: ^5.8.0
         version: 5.9.3
 
+  packages/core:
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.12.4
+      typescript:
+        specifier: ^5.8.0
+        version: 5.9.3
+
 packages:
 
   '@electron/get@5.0.0':
