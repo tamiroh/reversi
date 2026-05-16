@@ -8,7 +8,7 @@
         "reversi-gui": "./dist/bin/gui.js"
     },
     "scripts": {
-        "build": "node scripts/clean-dist.mjs && tsc && node scripts/copy-gui-assets.mjs",
+        "build": "node scripts/clean-dist.mjs && tsc && vite build",
         "start": "pnpm run cli",
         "cli": "pnpm run build && node dist/bin/cli.js",
         "dev": "node bin/cli.ts",
@@ -25,6 +25,7 @@
         "@types/node": "^24.0.0",
         "electron": "^42.0.1",
         "prettier": "3.8.3",
-        "typescript": "^5.8.0"
+        "typescript": "^5.8.0",
+        "vite": "^7.0.0"
     }
 }
