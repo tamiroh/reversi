@@ -16,7 +16,7 @@
         "ci": "pnpm run format:check && pnpm run build && pnpm test"
     },
     "dependencies": {
-        "@reversi/browser": "workspace:*"
+        "@reversi/ui": "workspace:*"
     },
     "devDependencies": {
         "@types/node": "^24.0.0",

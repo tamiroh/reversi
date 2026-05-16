@@ -1,4 +1,4 @@
-import type { BrowserOpponent } from "@reversi/browser";
+import type { UiOpponent } from "@reversi/ui";
 import {
     formatBoardPosition,
     legalDiscPlacements,
@@ -15,7 +15,7 @@ const PROMPT_API_OPTIONS: LanguageModelCreateOptions = {
 
 export async function createGeminiNanoOpponent(
     setStatus: PromptApiStatus,
-): Promise<BrowserOpponent> {
+): Promise<UiOpponent> {
     setStatus("Checking Chrome Prompt API availability...");
 
     if (typeof LanguageModel === "undefined") {

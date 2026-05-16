@@ -12,16 +12,6 @@ importers:
         specifier: 3.8.3
         version: 3.8.3
 
-  packages/browser:
-    dependencies:
-      '@reversi/core':
-        specifier: workspace:*
-        version: link:../core
-    devDependencies:
-      typescript:
-        specifier: ^5.8.0
-        version: 5.9.3
-
   packages/cli:
     dependencies:
       '@reversi/core':
@@ -49,9 +39,9 @@ importers:
 
   packages/gui:
     dependencies:
-      '@reversi/browser':
+      '@reversi/ui':
         specifier: workspace:*
-        version: link:../browser
+        version: link:../ui
     devDependencies:
       '@types/node':
         specifier: ^24.0.0
@@ -69,14 +59,24 @@ importers:
         specifier: ^7.0.0
         version: 7.3.3(@types/node@24.12.4)
 
-  packages/web:
+  packages/ui:
     dependencies:
-      '@reversi/browser':
-        specifier: workspace:*
-        version: link:../browser
       '@reversi/core':
         specifier: workspace:*
         version: link:../core
+    devDependencies:
+      typescript:
+        specifier: ^5.8.0
+        version: 5.9.3
+
+  packages/web:
+    dependencies:
+      '@reversi/core':
+        specifier: workspace:*
+        version: link:../core
+      '@reversi/ui':
+        specifier: workspace:*
+        version: link:../ui
     devDependencies:
       '@types/dom-chromium-ai':
         specifier: ^0.0.16

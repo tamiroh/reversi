@@ -15,7 +15,7 @@
         "vite": "^7.0.0"
     },
     "dependencies": {
-        "@reversi/browser": "workspace:*",
+        "@reversi/ui": "workspace:*",
         "@reversi/core": "workspace:*"
     }
 }

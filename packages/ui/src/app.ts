@@ -19,7 +19,7 @@ const CPU_THINKING_DELAY_MS = 600;
 const PLACEMENT_HIGHLIGHT_DELAY_MS = 650;
 const INITIAL_GUI_MESSAGE = "Choose a highlighted square.";
 
-export type BrowserOpponent = {
+export type UiOpponent = {
     name: string;
     thinkingMessage?: string;
     choosePlacement: (
@@ -27,54 +27,54 @@ export type BrowserOpponent = {
     ) => Position | null | Promise<Position | null>;
 };
 
-export type BrowserOpponentFactoryContext = {
+export type UiOpponentFactoryContext = {
     setStatus: (message: string) => void;
 };
 
-export type BrowserOpponentOption = {
+export type UiOpponentOption = {
     id: string;
     label: string;
     createOpponent: (
-        context: BrowserOpponentFactoryContext,
-    ) => BrowserOpponent | Promise<BrowserOpponent>;
+        context: UiOpponentFactoryContext,
+    ) => UiOpponent | Promise<UiOpponent>;
 };
 
-export type BrowserReversiOptions = {
-    opponents?: BrowserOpponentOption[];
+export type UiReversiOptions = {
+    opponents?: UiOpponentOption[];
 };
 
-const DEFAULT_OPPONENT: BrowserOpponent = {
+const DEFAULT_OPPONENT: UiOpponent = {
     name: "CPU",
     thinkingMessage: "CPU is thinking...",
     choosePlacement: chooseCpuPlacement,
 };
 
-const DEFAULT_OPPONENT_OPTION: BrowserOpponentOption = {
+const DEFAULT_OPPONENT_OPTION: UiOpponentOption = {
     id: "cpu",
     label: "CPU",
     createOpponent: () => DEFAULT_OPPONENT,
 };
 
-export function mountBrowserReversi(
+export function mountReversiUi(
     root: HTMLElement,
-    options: BrowserReversiOptions = {},
+    options: UiReversiOptions = {},
 ): void {
-    new BrowserReversiApp(root, [
+    new ReversiUiApp(root, [
         DEFAULT_OPPONENT_OPTION,
         ...(options.opponents ?? []),
     ]).mount();
 }
 
-class BrowserReversiApp {
+class ReversiUiApp {
     private readonly elements: ReturnType<typeof createGuiElements>["elements"];
     private readonly newGameButton: HTMLButtonElement;
     private readonly opponentSelect: HTMLSelectElement;
-    private readonly opponentOptions: BrowserOpponentOption[];
+    private readonly opponentOptions: UiOpponentOption[];
     private opponent = DEFAULT_OPPONENT;
     private selectedOpponentId = DEFAULT_OPPONENT_OPTION.id;
     private state = createInitialGuiState();
 
-    constructor(root: HTMLElement, opponentOptions: BrowserOpponentOption[]) {
+    constructor(root: HTMLElement, opponentOptions: UiOpponentOption[]) {
         const { elements, newGameButton } = createGuiElements(root, {
             opponentName: DEFAULT_OPPONENT.name,
             opponentOptions,

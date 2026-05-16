@@ -7,16 +7,16 @@
 - The app is intentionally small. Prefer a few clear modules over premature splitting.
 - Current packages:
     - `packages/core`: Reversi rules, CPU selection, shared labels/input parsing, and pure utilities.
-    - `packages/browser`: shared browser DOM UI, CSS, and browser-side game flow.
+    - `packages/ui`: shared browser DOM UI, CSS, and browser-side game flow.
     - `packages/cli`: terminal CLI application.
     - `packages/gui`: Electron GUI application.
     - `packages/web`: Vite web application shell.
 - Keep package boundaries clear:
     - `packages/core` must stay independent from Node, Electron, terminal, and DOM APIs.
-    - `packages/browser` may depend on browser DOM APIs and `@reversi/core`, but not Node or Electron APIs.
+    - `packages/ui` may depend on browser DOM APIs and `@reversi/core`, but not Node or Electron APIs.
     - `packages/cli` may depend on Node terminal APIs and `@reversi/core`.
-    - `packages/gui` may depend on Electron, Vite, and `@reversi/browser`.
-    - `packages/web` may depend on Vite and `@reversi/browser`.
+    - `packages/gui` may depend on Electron, Vite, and `@reversi/ui`.
+    - `packages/web` may depend on Vite and `@reversi/ui`.
 
 ## Commands
 
