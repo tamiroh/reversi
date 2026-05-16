@@ -9,24 +9,17 @@ import {
     type Position,
 } from "@reversi/core";
 import {
+    createGuiElements,
     formatBoardPosition,
     guiPlacementMessage,
     renderGui,
-    type GuiElements,
     type GuiState,
 } from "../src/ui.ts";
 
 const CPU_THINKING_DELAY_MS = 600;
 const PLACEMENT_HIGHLIGHT_DELAY_MS = 650;
 
-const elements: GuiElements = {
-    board: requireElement("board"),
-    status: requireElement("status"),
-    message: requireElement("message"),
-    humanScore: requireElement("human-score"),
-    cpuScore: requireElement("cpu-score"),
-};
-const newGameButton = requireElement("new-game");
+const { elements, newGameButton } = createGuiElements(requireElement("app"));
 
 let state: GuiState = {
     game: createInitialGame(),

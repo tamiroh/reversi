@@ -37,6 +37,85 @@ export type GuiRenderCallbacks = {
     onHumanPlacement: (position: Position) => void;
 };
 
+export type GuiMount = {
+    elements: GuiElements;
+    newGameButton: HTMLButtonElement;
+};
+
+export function createGuiElements(root: HTMLElement): GuiMount {
+    const shell = document.createElement("main");
+    shell.className = "app-shell";
+
+    const gameArea = document.createElement("section");
+    gameArea.className = "game-area";
+    gameArea.ariaLabel = "Reversi board";
+
+    const boardHeader = document.createElement("div");
+    boardHeader.className = "board-header";
+
+    const headingGroup = document.createElement("div");
+    const heading = document.createElement("h1");
+    heading.textContent = "Reversi";
+    const status = document.createElement("p");
+    status.className = "status";
+    headingGroup.append(heading, status);
+
+    const newGameButton = document.createElement("button");
+    newGameButton.className = "new-game";
+    newGameButton.type = "button";
+    newGameButton.textContent = "New game";
+
+    boardHeader.append(headingGroup, newGameButton);
+
+    const board = document.createElement("div");
+    board.className = "board";
+
+    gameArea.append(boardHeader, board);
+
+    const sidePanel = document.createElement("aside");
+    sidePanel.className = "side-panel";
+    sidePanel.ariaLabel = "Game information";
+
+    const scoreboard = document.createElement("dl");
+    scoreboard.className = "scoreboard";
+
+    const humanScore = renderScore("You", "2");
+    const cpuScore = renderScore("CPU", "2");
+    scoreboard.append(humanScore.item, cpuScore.item);
+
+    const message = document.createElement("p");
+    message.className = "message";
+
+    sidePanel.append(scoreboard, message);
+    shell.append(gameArea, sidePanel);
+
+    root.replaceChildren(shell);
+
+    return {
+        elements: {
+            board,
+            status,
+            message,
+            humanScore: humanScore.value,
+            cpuScore: cpuScore.value,
+        },
+        newGameButton,
+    };
+}
+
+function renderScore(
+    label: string,
+    initialValue: string,
+): { item: HTMLDivElement; value: HTMLElement } {
+    const item = document.createElement("div");
+    const term = document.createElement("dt");
+    term.textContent = label;
+    const value = document.createElement("dd");
+    value.textContent = initialValue;
+    item.append(term, value);
+    return { item, value };
+}
+
 function guiPlayerName(player: Player): string {
     if (player === HUMAN_PLAYER) return "You";
     if (player === CPU_PLAYER) return "CPU";

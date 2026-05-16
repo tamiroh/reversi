@@ -7,33 +7,7 @@
         <link rel="stylesheet" href="./style.css" />
     </head>
     <body>
-        <main class="app-shell">
-            <section class="game-area" aria-label="Reversi board">
-                <div class="board-header">
-                    <div>
-                        <h1>Reversi</h1>
-                        <p id="status" class="status"></p>
-                    </div>
-                    <button id="new-game" class="new-game" type="button">
-                        New game
-                    </button>
-                </div>
-                <div id="board" class="board"></div>
-            </section>
-            <aside class="side-panel" aria-label="Game information">
-                <dl class="scoreboard">
-                    <div>
-                        <dt>You</dt>
-                        <dd id="human-score">2</dd>
-                    </div>
-                    <div>
-                        <dt>CPU</dt>
-                        <dd id="cpu-score">2</dd>
-                    </div>
-                </dl>
-                <p id="message" class="message"></p>
-            </aside>
-        </main>
+        <div id="app"></div>
         <script type="module" src="./renderer.ts"></script>
     </body>
 </html>
