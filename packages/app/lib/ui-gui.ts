@@ -11,11 +11,12 @@ import {
     type GameState,
     type Player,
     type Position,
-} from "./game.ts";
-import { CPU_PLAYER, HUMAN_PLAYER } from "./player-roles.ts";
-import { formatBoardPosition } from "./ui-shared.ts";
+    CPU_PLAYER,
+    HUMAN_PLAYER,
+    formatBoardPosition,
+} from "@reversi/core";
 
-export { formatBoardPosition } from "./ui-shared.ts";
+export { formatBoardPosition } from "@reversi/core";
 
 export type GuiState = {
     game: GameState;

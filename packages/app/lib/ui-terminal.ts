@@ -12,10 +12,12 @@ import {
     type GameState,
     type Player,
     type Position,
-} from "./game.ts";
-import { CPU_PLAYER, HUMAN_PLAYER } from "./player-roles.ts";
+    CPU_PLAYER,
+    HUMAN_PLAYER,
+    playerMark,
+    playerName,
+} from "@reversi/core";
 import { blink, clearScreen, colorize, writeTerminal } from "./terminal.ts";
-import { playerMark, playerName } from "./ui-shared.ts";
 
 //
 // Terminal UI

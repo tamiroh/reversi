@@ -1,12 +1,13 @@
-import { chooseCpuPlacement } from "../lib/cpu.ts";
 import {
+    CPU_PLAYER,
+    HUMAN_PLAYER,
+    chooseCpuPlacement,
     createInitialGame,
     isGameOver,
     placeDisc,
     type GameState,
     type Position,
-} from "../lib/game.ts";
-import { CPU_PLAYER, HUMAN_PLAYER } from "../lib/player-roles.ts";
+} from "@reversi/core";
 import {
     formatBoardPosition,
     guiPlacementMessage,

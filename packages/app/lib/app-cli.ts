@@ -1,21 +1,19 @@
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 import { setTimeout as delay } from "node:timers/promises";
-import { chooseCpuPlacement } from "./cpu.ts";
 import {
-    placeDisc,
+    CPU_PLAYER,
+    chooseCpuPlacement,
     createInitialGame,
-    isGameOver,
-    type GameState,
-} from "./game.ts";
-import { CPU_PLAYER } from "./player-roles.ts";
-import { clearScreen } from "./terminal.ts";
-import {
     formatBoardPosition,
+    isGameOver,
     isQuitInput,
+    placeDisc,
     parseBoardPosition,
     placementMessage,
-} from "./ui-shared.ts";
+    type GameState,
+} from "@reversi/core";
+import { clearScreen } from "./terminal.ts";
 import { renderGame, renderGameResult, squarePrompt } from "./ui-terminal.ts";
 
 const CPU_THINKING_DELAY_MS = 700;
