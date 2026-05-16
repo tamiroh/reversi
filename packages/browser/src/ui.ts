@@ -31,10 +31,22 @@ export type GuiElements = {
     message: HTMLElement;
     humanScore: HTMLElement;
     cpuScore: HTMLElement;
+    opponentScoreLabel: HTMLElement;
+    opponentSelect: HTMLSelectElement;
+    opponentStatus: HTMLElement;
 };
 
-export type GuiRenderCallbacks = {
+export type GuiPlayerLabels = {
+    opponentName: string;
+};
+
+export type GuiRenderCallbacks = GuiPlayerLabels & {
     onHumanPlacement: (position: Position) => void;
+};
+
+export type GuiLabels = GuiPlayerLabels & {
+    opponentOptions: Array<{ id: string; label: string }>;
+    selectedOpponentId: string;
 };
 
 export type GuiMount = {
@@ -42,7 +54,10 @@ export type GuiMount = {
     newGameButton: HTMLButtonElement;
 };
 
-export function createGuiElements(root: HTMLElement): GuiMount {
+export function createGuiElements(
+    root: HTMLElement,
+    labels: GuiLabels,
+): GuiMount {
     const shell = document.createElement("main");
     shell.className = "app-shell";
 
@@ -76,17 +91,19 @@ export function createGuiElements(root: HTMLElement): GuiMount {
     sidePanel.className = "side-panel";
     sidePanel.ariaLabel = "Game information";
 
+    const opponentControl = renderOpponentControl(labels);
+
     const scoreboard = document.createElement("dl");
     scoreboard.className = "scoreboard";
 
     const humanScore = renderScore("You", "2");
-    const cpuScore = renderScore("CPU", "2");
+    const cpuScore = renderScore(labels.opponentName, "2");
     scoreboard.append(humanScore.item, cpuScore.item);
 
     const message = document.createElement("p");
     message.className = "message";
 
-    sidePanel.append(scoreboard, message);
+    sidePanel.append(opponentControl.item, scoreboard, message);
     shell.append(gameArea, sidePanel);
 
     root.replaceChildren(shell);
@@ -98,27 +115,62 @@ export function createGuiElements(root: HTMLElement): GuiMount {
             message,
             humanScore: humanScore.value,
             cpuScore: cpuScore.value,
+            opponentScoreLabel: cpuScore.label,
+            opponentSelect: opponentControl.select,
+            opponentStatus: opponentControl.status,
         },
         newGameButton,
     };
 }
 
+function renderOpponentControl(labels: GuiLabels): {
+    item: HTMLDivElement;
+    select: HTMLSelectElement;
+    status: HTMLElement;
+} {
+    const item = document.createElement("div");
+    item.className = "opponent-control";
+
+    const label = document.createElement("label");
+    label.textContent = "Opponent";
+
+    const select = document.createElement("select");
+    for (const option of labels.opponentOptions) {
+        const selectOption = document.createElement("option");
+        selectOption.value = option.id;
+        selectOption.textContent = option.label;
+        select.append(selectOption);
+    }
+    select.value = labels.selectedOpponentId;
+    select.disabled = labels.opponentOptions.length < 2;
+    label.append(select);
+
+    const status = document.createElement("p");
+    status.textContent =
+        labels.opponentOptions.length < 2
+            ? "CPU opponent is selected."
+            : `${labels.opponentName} is selected.`;
+
+    item.append(label, status);
+    return { item, select, status };
+}
+
 function renderScore(
     label: string,
     initialValue: string,
-): { item: HTMLDivElement; value: HTMLElement } {
+): { item: HTMLDivElement; label: HTMLElement; value: HTMLElement } {
     const item = document.createElement("div");
     const term = document.createElement("dt");
     term.textContent = label;
     const value = document.createElement("dd");
     value.textContent = initialValue;
     item.append(term, value);
-    return { item, value };
+    return { item, label: term, value };
 }
 
-function guiPlayerName(player: Player): string {
+function guiPlayerName(player: Player, labels: GuiPlayerLabels): string {
     if (player === HUMAN_PLAYER) return "You";
-    if (player === CPU_PLAYER) return "CPU";
+    if (player === CPU_PLAYER) return labels.opponentName;
     return player;
 }
 
@@ -127,12 +179,13 @@ export function guiPlacementMessage(
     nextGame: GameState,
     position: Position,
     flippedCount: number,
+    labels: GuiPlayerLabels,
 ): string {
     if (nextGame.current === previousGame.current) {
-        return `${guiPlayerName(opponent(previousGame.current))} has no legal squares. ${guiPlayerName(previousGame.current)} plays again.`;
+        return `${guiPlayerName(opponent(previousGame.current), labels)} has no legal squares. ${guiPlayerName(previousGame.current, labels)} plays again.`;
     }
 
-    return `${guiPlayerName(previousGame.current)} placed at ${formatBoardPosition(position)} and flipped ${flippedCount}.`;
+    return `${guiPlayerName(previousGame.current, labels)} placed at ${formatBoardPosition(position)} and flipped ${flippedCount}.`;
 }
 
 export function renderGui(
@@ -140,25 +193,29 @@ export function renderGui(
     state: GuiState,
     callbacks: GuiRenderCallbacks,
 ): void {
-    renderGuiStatus(elements, state);
+    renderGuiStatus(elements, state, callbacks);
     renderGuiScores(elements, state);
     renderGuiBoard(elements, state, callbacks);
 }
 
-function renderGuiStatus(elements: GuiElements, state: GuiState): void {
+function renderGuiStatus(
+    elements: GuiElements,
+    state: GuiState,
+    labels: GuiPlayerLabels,
+): void {
     if (isGameOver(state.game.board)) {
         const result = winner(state.game.board);
         elements.status.textContent =
             result === "draw"
                 ? "Game over: draw."
-                : `Game over: ${guiPlayerName(result)} wins.`;
+                : `Game over: ${guiPlayerName(result, labels)} wins.`;
         elements.message.textContent = state.message;
         return;
     }
 
     elements.status.textContent = state.waitingForCpu
-        ? "CPU is thinking..."
-        : `Turn: ${guiPlayerName(state.game.current)}`;
+        ? `${labels.opponentName} is thinking...`
+        : `Turn: ${guiPlayerName(state.game.current, labels)}`;
     elements.message.textContent = state.message;
 }
 

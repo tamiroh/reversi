@@ -19,19 +19,71 @@ const CPU_THINKING_DELAY_MS = 600;
 const PLACEMENT_HIGHLIGHT_DELAY_MS = 650;
 const INITIAL_GUI_MESSAGE = "Choose a highlighted square.";
 
-export function mountBrowserReversi(root: HTMLElement): void {
-    new BrowserReversiApp(root).mount();
+export type BrowserOpponent = {
+    name: string;
+    thinkingMessage?: string;
+    choosePlacement: (
+        game: GuiState["game"],
+    ) => Position | null | Promise<Position | null>;
+};
+
+export type BrowserOpponentFactoryContext = {
+    setStatus: (message: string) => void;
+};
+
+export type BrowserOpponentOption = {
+    id: string;
+    label: string;
+    createOpponent: (
+        context: BrowserOpponentFactoryContext,
+    ) => BrowserOpponent | Promise<BrowserOpponent>;
+};
+
+export type BrowserReversiOptions = {
+    opponents?: BrowserOpponentOption[];
+};
+
+const DEFAULT_OPPONENT: BrowserOpponent = {
+    name: "CPU",
+    thinkingMessage: "CPU is thinking...",
+    choosePlacement: chooseCpuPlacement,
+};
+
+const DEFAULT_OPPONENT_OPTION: BrowserOpponentOption = {
+    id: "cpu",
+    label: "CPU",
+    createOpponent: () => DEFAULT_OPPONENT,
+};
+
+export function mountBrowserReversi(
+    root: HTMLElement,
+    options: BrowserReversiOptions = {},
+): void {
+    new BrowserReversiApp(root, [
+        DEFAULT_OPPONENT_OPTION,
+        ...(options.opponents ?? []),
+    ]).mount();
 }
 
 class BrowserReversiApp {
     private readonly elements: ReturnType<typeof createGuiElements>["elements"];
     private readonly newGameButton: HTMLButtonElement;
+    private readonly opponentSelect: HTMLSelectElement;
+    private readonly opponentOptions: BrowserOpponentOption[];
+    private opponent = DEFAULT_OPPONENT;
+    private selectedOpponentId = DEFAULT_OPPONENT_OPTION.id;
     private state = createInitialGuiState();
 
-    constructor(root: HTMLElement) {
-        const { elements, newGameButton } = createGuiElements(root);
+    constructor(root: HTMLElement, opponentOptions: BrowserOpponentOption[]) {
+        const { elements, newGameButton } = createGuiElements(root, {
+            opponentName: DEFAULT_OPPONENT.name,
+            opponentOptions,
+            selectedOpponentId: DEFAULT_OPPONENT_OPTION.id,
+        });
         this.elements = elements;
         this.newGameButton = newGameButton;
+        this.opponentSelect = elements.opponentSelect;
+        this.opponentOptions = opponentOptions;
     }
 
     mount(): void {
@@ -40,11 +92,17 @@ class BrowserReversiApp {
             this.render();
         });
 
+        this.opponentSelect.addEventListener("change", () => {
+            void this.selectOpponent(this.opponentSelect.value);
+        });
+
         this.render();
     }
 
     private render(): void {
+        this.syncControls();
         renderGui(this.elements, this.state, {
+            opponentName: this.opponent.name,
             onHumanPlacement: (position) => {
                 void this.playHumanPlacement(position);
             },
@@ -75,6 +133,7 @@ class BrowserReversiApp {
                 result.game,
                 position,
                 result.flipped.length,
+                { opponentName: this.opponent.name },
             ),
             waitingForCpu: true,
         };
@@ -92,16 +151,18 @@ class BrowserReversiApp {
             this.state = {
                 ...this.state,
                 highlightedPositions: [],
-                message: "CPU is thinking...",
+                message:
+                    this.opponent.thinkingMessage ??
+                    `${this.opponent.name} is thinking...`,
                 waitingForCpu: true,
             };
             this.render();
             await delay(CPU_THINKING_DELAY_MS);
 
-            const cpuPosition = chooseCpuPlacement(this.state.game);
+            const cpuPosition = await this.chooseOpponentPlacement();
             if (!cpuPosition) {
                 throw new Error(
-                    "Unexpected CPU turn without a legal square before game over.",
+                    `Unexpected ${this.opponent.name} turn without a legal square before game over.`,
                 );
             }
 
@@ -121,6 +182,7 @@ class BrowserReversiApp {
                     result.game,
                     cpuPosition,
                     result.flipped.length,
+                    { opponentName: this.opponent.name },
                 ),
                 waitingForCpu: true,
             };
@@ -134,6 +196,72 @@ class BrowserReversiApp {
             waitingForCpu: false,
         };
         this.render();
+    }
+
+    private async chooseOpponentPlacement(): Promise<Position | null> {
+        try {
+            return await this.opponent.choosePlacement(this.state.game);
+        } catch (error) {
+            this.state = {
+                ...this.state,
+                highlightedPositions: [],
+                message:
+                    error instanceof Error
+                        ? error.message
+                        : `${this.opponent.name} could not choose a move.`,
+                waitingForCpu: false,
+            };
+            this.render();
+            throw error;
+        }
+    }
+
+    private async selectOpponent(opponentId: string): Promise<void> {
+        const option = this.opponentOptions.find(
+            (candidate) => candidate.id === opponentId,
+        );
+        if (!option) {
+            throw new Error(`Unknown opponent option: ${opponentId}`);
+        }
+
+        this.setOpponentControlsEnabled(false);
+        this.elements.opponentStatus.textContent = `Setting up ${option.label}...`;
+
+        try {
+            const opponent = await option.createOpponent({
+                setStatus: (message) => {
+                    this.elements.opponentStatus.textContent = message;
+                },
+            });
+            this.opponent = opponent;
+            this.selectedOpponentId = option.id;
+            this.elements.opponentScoreLabel.textContent = opponent.name;
+            this.elements.opponentStatus.textContent = `${opponent.name} is selected.`;
+            this.state = createInitialGuiState();
+            this.render();
+        } catch (error) {
+            this.opponentSelect.value = this.currentOpponentId();
+            this.elements.opponentStatus.textContent =
+                error instanceof Error
+                    ? error.message
+                    : `${option.label} could not be selected.`;
+        } finally {
+            this.setOpponentControlsEnabled(true);
+        }
+    }
+
+    private currentOpponentId(): string {
+        return this.selectedOpponentId;
+    }
+
+    private setOpponentControlsEnabled(enabled: boolean): void {
+        this.opponentSelect.disabled = !enabled || this.state.waitingForCpu;
+        this.newGameButton.disabled = !enabled;
+    }
+
+    private syncControls(): void {
+        this.opponentSelect.disabled =
+            this.opponentOptions.length < 2 || this.state.waitingForCpu;
     }
 }
 

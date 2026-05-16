@@ -74,7 +74,13 @@ importers:
       '@reversi/browser':
         specifier: workspace:*
         version: link:../browser
+      '@reversi/core':
+        specifier: workspace:*
+        version: link:../core
     devDependencies:
+      '@types/dom-chromium-ai':
+        specifier: ^0.0.16
+        version: 0.0.16
       typescript:
         specifier: ^5.8.0
         version: 5.9.3
@@ -381,6 +387,9 @@ packages:
     resolution: {integrity: sha512-QVTUovf40zgTqlFVrKA1uXMVvU2QWEFWfAH8Wdc48IxLvrJMQVMBRjuQyUpzZCDkakImib9eVazbWlC6ksWtJw==}
     cpu: [x64]
     os: [win32]
+
+  '@types/dom-chromium-ai@0.0.16':
+    resolution: {integrity: sha512-Z0vOBWckovkc85zctYKGEUUBHaqt9Oz8AUhAVyoNLAsMGlBhMNl/8w1n8JG1y0g7TW03EzWt5RsdcDD70ra58g==}
 
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
@@ -733,6 +742,8 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.60.4':
     optional: true
+
+  '@types/dom-chromium-ai@0.0.16': {}
 
   '@types/estree@1.0.8': {}
 

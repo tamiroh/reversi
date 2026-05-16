@@ -10,10 +10,12 @@
         "preview": "vite preview"
     },
     "devDependencies": {
+        "@types/dom-chromium-ai": "^0.0.16",
         "typescript": "^5.8.0",
         "vite": "^7.0.0"
     },
     "dependencies": {
-        "@reversi/browser": "workspace:*"
+        "@reversi/browser": "workspace:*",
+        "@reversi/core": "workspace:*"
     }
 }
