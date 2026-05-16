@@ -4,13 +4,13 @@
     "private": true,
     "type": "module",
     "bin": {
-        "reversi-cli": "./dist/bin/cli.js"
+        "reversi-cli": "./dist/bin/app.js"
     },
     "scripts": {
         "build": "node scripts/clean-dist.mjs && tsc",
         "start": "pnpm run cli",
-        "cli": "pnpm run build && node dist/bin/cli.js",
-        "dev": "node bin/cli.ts",
+        "cli": "pnpm run build && node dist/bin/app.js",
+        "dev": "node bin/app.ts",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "test": "node --test dist/**/*.test.js"

@@ -4,12 +4,12 @@
     "private": true,
     "type": "module",
     "bin": {
-        "reversi-gui": "./dist/bin/gui.js"
+        "reversi-gui": "./dist/bin/app.js"
     },
     "scripts": {
         "build": "node scripts/clean-dist.mjs && tsc && vite build",
         "start": "pnpm run gui",
-        "gui": "pnpm run build && env -u ELECTRON_RUN_AS_NODE electron dist/bin/gui.js",
+        "gui": "pnpm run build && env -u ELECTRON_RUN_AS_NODE electron dist/bin/app.js",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "test": "node --test dist/**/*.test.js",

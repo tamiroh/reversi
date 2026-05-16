@@ -14,7 +14,7 @@ import {
     renderGui,
     type GuiElements,
     type GuiState,
-} from "../lib/ui-gui.ts";
+} from "../src/ui.ts";
 
 const CPU_THINKING_DELAY_MS = 600;
 const PLACEMENT_HIGHLIGHT_DELAY_MS = 650;
