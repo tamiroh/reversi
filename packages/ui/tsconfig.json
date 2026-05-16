@@ -8,9 +8,12 @@
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "rewriteRelativeImportExtensions": true,
+        "allowImportingTsExtensions": true,
+        "jsx": "preserve",
+        "jsxImportSource": "solid-js",
         "types": [],
         "skipLibCheck": true,
         "noEmit": true
     },
-    "include": ["src/**/*.ts"]
+    "include": ["src/**/*.ts", "src/**/*.tsx"]
 }
