@@ -25,7 +25,7 @@ function comparePositions(a: Position, b: Position): number {
 
 function scoreDiscPlacement(game: GameState, position: Position): number {
     const result = placeDisc(game, position);
-    if (!result.ok) {
+    if (result.ok === false) {
         return Number.NEGATIVE_INFINITY;
     }
 

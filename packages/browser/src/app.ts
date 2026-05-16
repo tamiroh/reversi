@@ -60,7 +60,7 @@ class BrowserReversiApp {
         }
 
         const result = placeDisc(this.state.game, position);
-        if (!result.ok) {
+        if (result.ok === false) {
             this.state = { ...this.state, message: result.reason };
             this.render();
             return;
@@ -106,7 +106,7 @@ class BrowserReversiApp {
             }
 
             const result = placeDisc(this.state.game, cpuPosition);
-            if (!result.ok) {
+            if (result.ok === false) {
                 throw new Error(
                     `Unexpected illegal CPU square after selection: ${formatBoardPosition(cpuPosition)}.`,
                 );

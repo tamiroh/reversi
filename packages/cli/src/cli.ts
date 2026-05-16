@@ -62,7 +62,7 @@ async function playCpuTurn(state: AppState): Promise<TurnResult> {
     }
 
     const result = placeDisc(state.game, cpuPosition);
-    if (!result.ok) {
+    if (result.ok === false) {
         throw new Error(
             `Unexpected illegal CPU square after selection: ${formatBoardPosition(cpuPosition)}.`,
         );
@@ -109,7 +109,7 @@ async function playHumanTurn(
     }
 
     const result = placeDisc(state.game, position);
-    if (!result.ok) {
+    if (result.ok === false) {
         return {
             quit: false,
             state: { ...state, message: result.reason },
