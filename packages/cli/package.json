@@ -1,0 +1,26 @@
+{
+    "name": "@reversi/cli",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "bin": {
+        "reversi-cli": "./dist/bin/cli.js"
+    },
+    "scripts": {
+        "build": "node scripts/clean-dist.mjs && tsc",
+        "start": "pnpm run cli",
+        "cli": "pnpm run build && node dist/bin/cli.js",
+        "dev": "node bin/cli.ts",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "test": "node --test dist/**/*.test.js"
+    },
+    "dependencies": {
+        "@reversi/core": "workspace:*"
+    },
+    "devDependencies": {
+        "@types/node": "^24.0.0",
+        "prettier": "3.8.3",
+        "typescript": "^5.8.0"
+    }
+}

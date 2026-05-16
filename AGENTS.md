@@ -6,21 +6,13 @@
 - Runtime target is modern Node.js 24.
 - The app is intentionally small. Prefer a few clear modules over premature splitting.
 - Current packages:
-    - `packages/app`: the current CLI and Electron GUI application.
-- Current module boundaries:
-    - `packages/app/bin/cli.ts`: thin CLI executable entrypoint.
-    - `packages/app/bin/gui.ts`: thin GUI executable entrypoint.
-    - `packages/app/gui/`: Electron renderer HTML, CSS, and browser-side TypeScript, including GUI rendering.
-    - `packages/app/lib/app-cli.ts`: CLI application orchestration and terminal I/O wiring.
-    - `packages/app/lib/app-gui.ts`: Electron main-process window orchestration.
-    - `packages/app/lib/game.ts`: Reversi rules and board representation.
-    - `packages/app/lib/player-roles.ts`: app-level player role assignment, such as human vs CPU.
-    - `packages/app/lib/cpu.ts`: CPU square selection and scoring.
-    - `packages/app/lib/ui-shared.ts`: UI labels, messages, and input parsing shared by interfaces.
-    - `packages/app/lib/ui-terminal.ts`: terminal-specific Reversi rendering and prompts.
-    - `packages/app/lib/ui-gui.ts`: GUI-specific Reversi rendering and browser DOM updates.
-    - `packages/app/lib/terminal.ts`: reusable terminal output, screen, and ANSI styling helpers.
-    - `packages/app/lib/type-utils.ts`: reusable TypeScript type utilities.
+    - `packages/core`: Reversi rules, CPU selection, shared labels/input parsing, and pure utilities.
+    - `packages/cli`: terminal CLI application.
+    - `packages/app`: Electron GUI application.
+- Keep package boundaries clear:
+    - `packages/core` must stay independent from Node, Electron, terminal, and DOM APIs.
+    - `packages/cli` may depend on Node terminal APIs and `@reversi/core`.
+    - `packages/app` may depend on Electron, browser DOM APIs, Vite, and `@reversi/core`.
 
 ## Commands
 
@@ -62,7 +54,7 @@ Keep related functions in the matching section. Reorder within a file when it im
 
 - Keep board logic in `game.ts` for now. A previous attempt to split `board.ts` made the boundary feel unclear.
 - Keep terminal input simple and keyboard-driven with typed squares such as `d3` or `3 4`.
-- Keep CPU player logic independent in `packages/app/lib/cpu.ts`; it should depend on public game APIs rather than owning rule logic.
+- Keep CPU player logic independent in `packages/core/src/cpu.ts`; it should depend on public game APIs rather than owning rule logic.
 
 ## Error Handling
 

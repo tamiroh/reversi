@@ -14,7 +14,7 @@ import {
     type GameState,
 } from "@reversi/core";
 import { clearScreen } from "./terminal.ts";
-import { renderGame, renderGameResult, squarePrompt } from "./ui-terminal.ts";
+import { renderGame, renderGameResult, squarePrompt } from "./ui.ts";
 
 const CPU_THINKING_DELAY_MS = 700;
 const PLACEMENT_HIGHLIGHT_DELAY_MS = 700;
